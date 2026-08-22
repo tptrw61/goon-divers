@@ -380,6 +380,49 @@ h1 {
   border-color: var(--se-yellow);
 }
 
+/* --- Gear Swap body ------------------------------------------------------- */
+
+.swap-body {
+  padding: 20px 16px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+.swap-caption {
+  font-size: .64rem;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+/* Coloured for the diver being built FOR, not the one doing the building, so
+   you can trace a hand-off by matching the two colours across cards. */
+.swap-target {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+  color: var(--target, var(--se-yellow));
+}
+
+.swap-self {
+  margin-top: 4px;
+  padding: 3px 10px;
+  font-size: .6rem;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--target, var(--se-yellow));
+}
+
+.swap-self[hidden] { display: none; }
+
+#copy-note { color: var(--se-yellow); }
+
 /* --- Stub pages ----------------------------------------------------------- */
 .stub {
   margin-top: 34px;

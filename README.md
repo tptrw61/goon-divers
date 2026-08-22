@@ -6,7 +6,7 @@ A three-page static site for GitHub Pages.
 | --- | --- | --- |
 | The Wheel of Pain | `index.html` | Built — random Helldivers 2 loadout generator |
 | Mr. President | `mr-president.html` | Stub |
-| Gear Swap | `gear-swap.html` | Stub |
+| Gear Swap | `gear-swap.html` | Built — who builds gear for whom |
 
 ## The Wheel of Pain
 
@@ -45,6 +45,22 @@ No public source documents diver 4's green. The three that are documented are
 all exactly 100% saturation at 64–77% lightness, so the green is matched to
 that family at hue 115. To use the real value, change `--p4` in
 `css/style.css`; nothing else needs touching.
+
+## Gear Swap
+
+Draws one of the 24 permutations of the four divers. Position *i* is the diver
+that diver *i* builds gear for, and all 24 are in play rather than only the 9
+derangements — so drawing yourself is a legitimate outcome and gets called out
+on the card.
+
+The chosen assignment rides in the URL hash as `#a=1`…`#a=24`, ordered
+lexicographically so a given number always means the same assignment. **Copy
+Link** hands the squad a URL that shows them all the same one, which is the only
+way for a static site to agree on a roll. With no hash it falls back to whatever
+this browser last stored, and failing that it rolls at random.
+
+Card colour marks the diver being built *for*, not the builder, so a hand-off
+can be traced by matching two colours across cards.
 
 ## Diver names across pages
 

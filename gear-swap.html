@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Gear Swap :: Goon Divers</title>
-<meta name="description" content="This section has not been declassified yet. Drop the spec in and it gets built.">
+<meta name="description" content="Draws one of the 24 ways four Helldivers can be assigned to build each other's loadouts.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&display=swap" rel="stylesheet">
@@ -33,18 +33,32 @@
   <div class="page-head">
     <p class="eyebrow">Requisitions Depot</p>
     <h1>Gear Swap</h1>
+    <p class="lede">
+      One of the twenty-four ways four divers can be dealt to each other. Each
+      diver builds the loadout for whoever they are pointed at — and since all
+      twenty-four are in play, drawing yourself is a legitimate, if lonely,
+      outcome. Copy the link to hand the squad the same assignment; names are
+      shared with The Wheel of Pain.
+    </p>
   </div>
 
-  <section class="stub">
-    <span class="stub-stamp">Awaiting Orders</span>
-    <p>This section has not been declassified yet. Drop the spec in and it gets built.</p>
-  </section>
+  <div class="controls">
+    <button class="btn" id="reassign" type="button">Reassign</button>
+    <button class="btn btn-ghost" id="copy-link" type="button">Copy Link</button>
+    <span class="control-note">
+      Assignment <span id="assignment-no">—</span>
+      <span id="copy-note"></span>
+    </span>
+  </div>
+
+  <div class="grid" id="grid"></div>
 
 </main>
 
 <footer class="foot">Managed Democracy is a privilege, not a right</footer>
 
 <script src="js/names.js"></script>
+<script src="js/gear-swap.js"></script>
 
 </body>
 </html>
