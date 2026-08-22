@@ -251,7 +251,6 @@ function buildNerfCard() {
   const on = el("div", "pres-sub");
   const name = el("div", "pres-nerf", "—");
   on.append(name);
-  on.append(el("div", "pres-caption", "Applies to"));
   const target = el("div", "pres-detail", "—");
   on.append(target);
   body.append(on);
