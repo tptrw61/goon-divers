@@ -8,9 +8,9 @@
         all. When they may, one of VIP_KILL_MODIFIERS says how, all equally
         likely.
      4. Salve Nerf — switchable. When on, exactly one nerf from SALVE_NERFS
-        lands on one diver, drawn uniformly and free to land on the VIP or the
-        bodyguard. Nerfs are allowed to contradict the VIP's kill modifier;
-        that is the point.
+        is drawn. It is not pinned to anybody: it is a rule for the run, not a
+        handicap on a named diver. Nerfs are allowed to contradict the VIP's
+        kill modifier; that is the point.
 
    The whole roll rides in the URL hash so one person can roll and paste it to
    the squad. Both tables live in js/data.js.
@@ -38,14 +38,14 @@ function rollEverything() {
     kill:   Math.random() < 0.5,
     how:    randomIndex(VIP_KILL_MODIFIERS.length),
     nerf:   randomIndex(SALVE_NERFS.length),
-    target: randomIndex(DIVER_COUNT),
   };
 }
 
 /* --- Share link ----------------------------------------------------------- */
 
-/* #r=vip.guard.kill.how.nerfOn.nerf.target — divers 1-based, flags 0/1,
-   table positions 0-based. */
+/* #r=vip.guard.kill.how.nerfOn.nerf — divers 1-based, flags 0/1, table
+   positions 0-based. Links minted before the nerf stopped naming a diver
+   carried a seventh field; those no longer parse and are rerolled. */
 
 function validRoll(candidate) {
   const index = (n, max) => Number.isInteger(n) && n >= 0 && n < max;
@@ -55,31 +55,28 @@ function validRoll(candidate) {
     index(candidate.guard, DIVER_COUNT) && candidate.guard !== candidate.vip &&
     index(candidate.how, VIP_KILL_MODIFIERS.length) &&
     index(candidate.nerf, SALVE_NERFS.length) &&
-    index(candidate.target, DIVER_COUNT) &&
     flag(candidate.killFlag) && flag(candidate.nerfFlag);
   if (!ok) return null;
   return {
     state: {
       vip: candidate.vip, guard: candidate.guard, kill: candidate.killFlag === 1,
-      how: candidate.how, nerf: candidate.nerf, target: candidate.target,
+      how: candidate.how, nerf: candidate.nerf,
     },
     nerfOn: candidate.nerfFlag === 1,
   };
 }
 
 function readHash() {
-  const match = /^#r=(\d+(?:\.\d+){6})$/.exec(window.location.hash || "");
+  const match = /^#r=(\d+(?:\.\d+){5})$/.exec(window.location.hash || "");
   if (!match) return null;
-  const [vip, guard, killFlag, how, nerfFlag, nerf, target] =
-    match[1].split(".").map(Number);
-  return validRoll({ vip: vip - 1, guard: guard - 1, killFlag, how,
-                     nerfFlag, nerf, target: target - 1 });
+  const [vip, guard, killFlag, how, nerfFlag, nerf] = match[1].split(".").map(Number);
+  return validRoll({ vip: vip - 1, guard: guard - 1, killFlag, how, nerfFlag, nerf });
 }
 
 function writeHash() {
   const parts = [
     roll.vip + 1, roll.guard + 1, roll.kill ? 1 : 0, roll.how,
-    nerfEnabled ? 1 : 0, roll.nerf, roll.target + 1,
+    nerfEnabled ? 1 : 0, roll.nerf,
   ];
   // replaceState so rerolling doesn't pile up back-button history.
   history.replaceState(null, "", `#r=${parts.join(".")}`);
@@ -95,7 +92,7 @@ function readStored() {
     return validRoll({
       vip: saved.vip, guard: saved.guard, killFlag: saved.kill ? 1 : 0,
       how: saved.how, nerfFlag: saved.nerfOn ? 1 : 0,
-      nerf: saved.nerf, target: saved.target,
+      nerf: saved.nerf,
     });
   } catch (err) {
     return null;   // unreadable or stale against a changed table; roll fresh
@@ -145,14 +142,9 @@ function render() {
   refs.nerf.on.hidden = !nerfEnabled;
   refs.nerf.off.hidden = nerfEnabled;
   if (nerfEnabled) {
-    refs.nerf.card.style.setProperty("--diver", colorFor(roll.target));
     refs.nerf.name.textContent = SALVE_NERFS[roll.nerf];
-    refs.nerf.target.textContent = diverName(roll.target);
-    refs.nerf.card.setAttribute(
-      "aria-label", `Salve nerf: ${SALVE_NERFS[roll.nerf]}, on ${diverName(roll.target)}`
-    );
+    refs.nerf.card.setAttribute("aria-label", `Salve nerf: ${SALVE_NERFS[roll.nerf]}`);
   } else {
-    refs.nerf.card.style.setProperty("--diver", "var(--se-yellow)");
     refs.nerf.card.setAttribute("aria-label", "Salve nerf switched off");
   }
 
@@ -208,9 +200,10 @@ function buildRoleCard(role, title) {
   input.autocomplete = "off";
   input.title = "Click to rename this diver";
   input.addEventListener("input", () => {
+    // Nothing else on this page shows the name, so saving is the whole job;
+    // the input already holds what the visitor typed.
     diverNames[roll[role]] = input.value;
     saveDiverNames();
-    render();   // this diver may also be the nerf target
   });
   input.addEventListener("keydown", (event) => {
     if (event.key === "Enter" || event.key === "Escape") input.blur();
@@ -223,6 +216,7 @@ function buildRoleCard(role, title) {
 
 function buildKillCard() {
   const { card, body } = buildCard("Kill Permission");
+  card.style.setProperty("--diver", "var(--se-yellow)");
 
   body.append(el("div", "pres-caption", "The VIP"));
   const verdict = el("div", "pres-verdict", "—");
@@ -240,6 +234,7 @@ function buildKillCard() {
 
 function buildNerfCard() {
   const { card, head, body } = buildCard("Salve Nerf");
+  card.style.setProperty("--diver", "var(--se-yellow)");
 
   const toggle = el("button", "toggle", "On");
   toggle.type = "button";
@@ -251,14 +246,12 @@ function buildNerfCard() {
   const on = el("div", "pres-sub");
   const name = el("div", "pres-nerf", "—");
   on.append(name);
-  const target = el("div", "pres-detail", "—");
-  on.append(target);
   body.append(on);
 
   const off = el("div", "pres-off", "No nerf this run");
   body.append(off);
 
-  refs.nerf = { card, toggle, on, off, name, target };
+  refs.nerf = { card, toggle, on, off, name };
   return card;
 }
 

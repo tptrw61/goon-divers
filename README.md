@@ -56,13 +56,17 @@ A custom mode in four parts:
    anything at all, enemy or Helldiver. When they may, one of six equally
    likely modifiers dictates how: Anyway (meaning no restriction), Primary
    Only, Pistol Only, Melee Only, Stratagem Only, Primary/Secondary Only.
-4. **Salve Nerf** — switchable. When on, exactly one nerf is drawn and lands on
-   one diver, chosen uniformly and free to land on the VIP or the bodyguard.
-   Nerfs may contradict the VIP's kill modifier; sort it out at the table.
-   Flipping the switch off and back on restores the same nerf rather than
-   quietly rerolling the run.
+4. **Salve Nerf** — switchable. When on, exactly one nerf is drawn. It is not
+   pinned to anybody: it is a rule for the run, not a handicap on a named
+   diver. Nerfs may contradict the VIP's kill modifier; sort it out at the
+   table. Flipping the switch off and back on restores the same nerf rather
+   than quietly rerolling the run.
 
-The whole roll rides in the URL hash as `#r=vip.guard.kill.how.nerfOn.nerf.target`
+Only the VIP and Bodyguard cards are tinted, since only those name a diver. The
+two rule cards stay on the Super Earth yellow, so colour on this page always
+means "this is about that diver".
+
+The whole roll rides in the URL hash as `#r=vip.guard.kill.how.nerfOn.nerf`
 (divers 1-based, flags 0/1, table positions 0-based), with a **Copy Link**
 button. Anything malformed, out of range, or naming the same diver twice is
 rejected and rerolled rather than half-applied.
