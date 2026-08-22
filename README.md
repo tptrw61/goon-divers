@@ -28,6 +28,24 @@ Store item, all three Legendary (crossover) warbonds.
   that one browser and are never sent anywhere. **Clear Names** resets all four
   without touching the loadouts.
 
+## Squad colours
+
+Cards are tinted to the in-game join-order colours — top border, header wash,
+name text and reroll buttons. The stratagem slot bars deliberately stay on the
+category palette, since those carry information of their own.
+
+| Diver | Colour | Hex | Source |
+| --- | --- | --- | --- |
+| 1 | orange | `#ff9d45` | community palette |
+| 2 | blue | `#81abff` | community palette |
+| 3 | pink | `#f88aff` | community palette |
+| 4 | green | `#7cff70` | **derived** — see below |
+
+No public source documents diver 4's green. The three that are documented are
+all exactly 100% saturation at 64–77% lightness, so the green is matched to
+that family at hue 115. To use the real value, change `--p4` in
+`css/style.css`; nothing else needs touching.
+
 ## Diver names across pages
 
 `js/names.js` owns the roster and is loaded by all three pages. `localStorage`

@@ -22,6 +22,14 @@
   --g-emplacement:  #63e6a0;
   --g-slot:         #8a8a95;
 
+  /* In-game squad colours, in join order. Diver 4's green is not documented
+     anywhere public; it is matched to the other three, which are all exactly
+     100% saturation. Swap it here if you pull the real value off a screenshot. */
+  --p1: #ff9d45;   /* orange */
+  --p2: #81abff;   /* blue   */
+  --p3: #f88aff;   /* pink   */
+  --p4: #7cff70;   /* green  — derived */
+
   --notch:          14px;
   --font: "Chakra Petch", "Bahnschrift", "DIN Alternate",
           "Segoe UI Semibold", system-ui, sans-serif;
@@ -228,8 +236,10 @@ h1 {
 }
 
 .diver {
+  --diver: var(--se-yellow);   /* overridden per card below */
   background: var(--panel);
   border: 1px solid var(--line);
+  border-top: 3px solid var(--diver);
   clip-path: polygon(
     0 0, calc(100% - var(--notch)) 0, 100% var(--notch),
     100% 100%, var(--notch) 100%, 0 calc(100% - var(--notch))
@@ -238,12 +248,26 @@ h1 {
   flex-direction: column;
 }
 
+.diver:nth-child(1) { --diver: var(--p1); }
+.diver:nth-child(2) { --diver: var(--p2); }
+.diver:nth-child(3) { --diver: var(--p3); }
+.diver:nth-child(4) { --diver: var(--p4); }
+
+/* Reroll buttons follow their card, so the squad colour reads down the whole
+   card. The slot bars stay on the stratagem-category palette — those carry
+   information the diver colour would drown out. */
+.diver .icon-btn:hover {
+  background: var(--diver);
+  border-color: var(--diver);
+}
+
 .diver-head {
   padding: 12px 16px;
   display: flex;
   align-items: center;
   gap: 10px;
-  background: linear-gradient(90deg, rgba(255,231,2,.14), transparent 70%);
+  background: linear-gradient(90deg,
+    color-mix(in srgb, var(--diver) 20%, transparent), transparent 72%);
   border-bottom: 1px solid var(--line);
 }
 
@@ -256,7 +280,7 @@ h1 {
   font-weight: 700;
   letter-spacing: .2em;
   text-transform: uppercase;
-  color: var(--se-yellow);
+  color: var(--diver);
   background: transparent;
   border: 1px solid transparent;
   border-radius: 0;
@@ -267,19 +291,19 @@ h1 {
 }
 
 .diver-name::placeholder {
-  color: var(--se-yellow);
+  color: var(--diver);
   opacity: .55;
 }
 
 .diver-name:hover {
   border-color: var(--line);
-  background: rgba(255, 231, 2, .05);
+  background: color-mix(in srgb, var(--diver) 7%, transparent);
 }
 
 .diver-name:focus {
   outline: none;
-  border-color: var(--se-yellow);
-  background: rgba(255, 231, 2, .09);
+  border-color: var(--diver);
+  background: color-mix(in srgb, var(--diver) 12%, transparent);
 }
 
 .diver-name:focus::placeholder { opacity: .3; }
