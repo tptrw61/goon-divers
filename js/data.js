@@ -82,7 +82,6 @@ const STRATAGEMS = [
 
   /* --- Vehicles & Exosuits ------------------------------------------------ */
   ["M-103 Supply FRV",                "vehicle"],
-  ["M-104 Incinerator FRV",           "vehicle"],
   ["M-102 Gunner FRV",                "vehicle"],
   ["EXO-45 Patriot Exosuit",          "vehicle"],
   ["EXO-49 Emancipator Exosuit",      "vehicle"],
