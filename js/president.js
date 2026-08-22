@@ -1,0 +1,306 @@
+/* ==========================================================================
+   MR. PRESIDENT :: custom mode roller
+   --------------------------------------------------------------------------
+   Four sections:
+     1. VIP        — one diver.
+     2. Bodyguard  — a different diver; never the VIP.
+     3. Kill permission — a straight coin flip on whether the VIP may kill at
+        all. When they may, one of VIP_KILL_MODIFIERS says how, all equally
+        likely.
+     4. Salve Nerf — switchable. When on, exactly one nerf from SALVE_NERFS
+        lands on one diver, drawn uniformly and free to land on the VIP or the
+        bodyguard. Nerfs are allowed to contradict the VIP's kill modifier;
+        that is the point.
+
+   The whole roll rides in the URL hash so one person can roll and paste it to
+   the squad. Both tables live in js/data.js.
+   ========================================================================== */
+
+const PRESIDENT_KEY = "goondivers.president";
+
+const refs = {};
+let roll = null;
+let nerfEnabled = true;
+
+/* --- Rolling -------------------------------------------------------------- */
+
+const randomIndex = (length) => Math.floor(Math.random() * length);
+
+/** A fresh everything. `how` and the nerf fields are always filled in, even
+    when the coin flip or the switch means they go unshown, so that toggling
+    the nerf back on never needs a second source of randomness. */
+function rollEverything() {
+  const vip = randomIndex(DIVER_COUNT);
+  const others = Array.from({ length: DIVER_COUNT }, (_, i) => i).filter((i) => i !== vip);
+  return {
+    vip,
+    guard:  others[randomIndex(others.length)],
+    kill:   Math.random() < 0.5,
+    how:    randomIndex(VIP_KILL_MODIFIERS.length),
+    nerf:   randomIndex(SALVE_NERFS.length),
+    target: randomIndex(DIVER_COUNT),
+  };
+}
+
+/* --- Share link ----------------------------------------------------------- */
+
+/* #r=vip.guard.kill.how.nerfOn.nerf.target — divers 1-based, flags 0/1,
+   table positions 0-based. */
+
+function validRoll(candidate) {
+  const index = (n, max) => Number.isInteger(n) && n >= 0 && n < max;
+  const flag  = (n) => n === 0 || n === 1;
+  const ok =
+    index(candidate.vip, DIVER_COUNT) &&
+    index(candidate.guard, DIVER_COUNT) && candidate.guard !== candidate.vip &&
+    index(candidate.how, VIP_KILL_MODIFIERS.length) &&
+    index(candidate.nerf, SALVE_NERFS.length) &&
+    index(candidate.target, DIVER_COUNT) &&
+    flag(candidate.killFlag) && flag(candidate.nerfFlag);
+  if (!ok) return null;
+  return {
+    state: {
+      vip: candidate.vip, guard: candidate.guard, kill: candidate.killFlag === 1,
+      how: candidate.how, nerf: candidate.nerf, target: candidate.target,
+    },
+    nerfOn: candidate.nerfFlag === 1,
+  };
+}
+
+function readHash() {
+  const match = /^#r=(\d+(?:\.\d+){6})$/.exec(window.location.hash || "");
+  if (!match) return null;
+  const [vip, guard, killFlag, how, nerfFlag, nerf, target] =
+    match[1].split(".").map(Number);
+  return validRoll({ vip: vip - 1, guard: guard - 1, killFlag, how,
+                     nerfFlag, nerf, target: target - 1 });
+}
+
+function writeHash() {
+  const parts = [
+    roll.vip + 1, roll.guard + 1, roll.kill ? 1 : 0, roll.how,
+    nerfEnabled ? 1 : 0, roll.nerf, roll.target + 1,
+  ];
+  // replaceState so rerolling doesn't pile up back-button history.
+  history.replaceState(null, "", `#r=${parts.join(".")}`);
+}
+
+/* --- Storage -------------------------------------------------------------- */
+
+function readStored() {
+  try {
+    const raw = localStorage.getItem(PRESIDENT_KEY);
+    if (raw === null || raw === "") return null;   // Number("") is 0; JSON of "" throws
+    const saved = JSON.parse(raw);
+    return validRoll({
+      vip: saved.vip, guard: saved.guard, killFlag: saved.kill ? 1 : 0,
+      how: saved.how, nerfFlag: saved.nerfOn ? 1 : 0,
+      nerf: saved.nerf, target: saved.target,
+    });
+  } catch (err) {
+    return null;   // unreadable or stale against a changed table; roll fresh
+  }
+}
+
+function store() {
+  try {
+    localStorage.setItem(PRESIDENT_KEY, JSON.stringify({ ...roll, nerfOn: nerfEnabled }));
+  } catch (err) { /* it just won't survive a reload */ }
+}
+
+/* --- Rendering ------------------------------------------------------------ */
+
+function el(tag, className, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+
+const colorFor = (diverIndex) => `var(--p${diverIndex + 1})`;
+
+function render() {
+  for (const role of ["vip", "guard"]) {
+    const ref = refs[role];
+    const diver = roll[role];
+    ref.card.style.setProperty("--diver", colorFor(diver));
+    ref.name.placeholder = defaultDiverName(diver);
+    if (document.activeElement !== ref.name) ref.name.value = diverNames[diver];
+    ref.name.setAttribute("aria-label", `Name for diver ${diver + 1}`);
+  }
+
+  refs.kill.verdict.textContent = roll.kill ? "May kill" : "May not kill";
+  refs.kill.verdict.classList.toggle("is-denied", !roll.kill);
+  refs.kill.howWrap.hidden = !roll.kill;
+  refs.kill.how.textContent = VIP_KILL_MODIFIERS[roll.how];
+  refs.kill.card.setAttribute(
+    "aria-label",
+    roll.kill
+      ? `The VIP may kill: ${VIP_KILL_MODIFIERS[roll.how]}`
+      : "The VIP may not kill"
+  );
+
+  refs.nerf.toggle.textContent = nerfEnabled ? "On" : "Off";
+  refs.nerf.toggle.setAttribute("aria-pressed", String(nerfEnabled));
+  refs.nerf.on.hidden = !nerfEnabled;
+  refs.nerf.off.hidden = nerfEnabled;
+  if (nerfEnabled) {
+    refs.nerf.card.style.setProperty("--diver", colorFor(roll.target));
+    refs.nerf.name.textContent = SALVE_NERFS[roll.nerf];
+    refs.nerf.target.textContent = diverName(roll.target);
+    refs.nerf.card.setAttribute(
+      "aria-label", `Salve nerf: ${SALVE_NERFS[roll.nerf]}, on ${diverName(roll.target)}`
+    );
+  } else {
+    refs.nerf.card.style.setProperty("--diver", "var(--se-yellow)");
+    refs.nerf.card.setAttribute("aria-label", "Salve nerf switched off");
+  }
+
+  writeHash();
+}
+
+/* --- Actions -------------------------------------------------------------- */
+
+function reroll() {
+  roll = rollEverything();
+  store();
+  render();
+}
+
+/** Toggling the nerf back on shows the nerf already rolled, so flipping the
+    switch never quietly rerolls the rest of the run. */
+function toggleNerf() {
+  nerfEnabled = !nerfEnabled;
+  store();
+  render();
+}
+
+async function copyLink() {
+  const note = document.getElementById("copy-note");
+  try {
+    await navigator.clipboard.writeText(window.location.href);
+    note.textContent = "Link copied";
+  } catch (err) {
+    note.textContent = "Copy blocked — the link is in the address bar";
+  }
+}
+
+/* --- Cards ---------------------------------------------------------------- */
+
+function buildCard(title) {
+  const card = el("article", "diver");
+  const head = el("div", "diver-head");
+  head.append(el("span", "card-title", title));
+  card.append(head);
+  const body = el("div", "pres-body");
+  card.append(body);
+  return { card, head, body };
+}
+
+/** The name shown for a role is that diver's shared name, editable in place. */
+function buildRoleCard(role, title) {
+  const { card, body } = buildCard(title);
+
+  const input = el("input", "pres-name");
+  input.type = "text";
+  input.maxLength = 22;
+  input.spellcheck = false;
+  input.autocomplete = "off";
+  input.title = "Click to rename this diver";
+  input.addEventListener("input", () => {
+    diverNames[roll[role]] = input.value;
+    saveDiverNames();
+    render();   // this diver may also be the nerf target
+  });
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === "Escape") input.blur();
+  });
+
+  body.append(input);
+  refs[role] = { card, name: input };
+  return card;
+}
+
+function buildKillCard() {
+  const { card, body } = buildCard("Kill Permission");
+
+  body.append(el("div", "pres-caption", "The VIP"));
+  const verdict = el("div", "pres-verdict", "—");
+  body.append(verdict);
+
+  const howWrap = el("div", "pres-sub");
+  howWrap.append(el("div", "pres-caption", "How"));
+  const how = el("div", "pres-detail", "—");
+  howWrap.append(how);
+  body.append(howWrap);
+
+  refs.kill = { card, verdict, howWrap, how };
+  return card;
+}
+
+function buildNerfCard() {
+  const { card, head, body } = buildCard("Salve Nerf");
+
+  const toggle = el("button", "toggle", "On");
+  toggle.type = "button";
+  toggle.title = "Switch the salve nerf on or off";
+  toggle.setAttribute("aria-label", "Salve nerf");
+  toggle.addEventListener("click", toggleNerf);
+  head.append(toggle);
+
+  const on = el("div", "pres-sub");
+  const name = el("div", "pres-nerf", "—");
+  on.append(name);
+  on.append(el("div", "pres-caption", "Applies to"));
+  const target = el("div", "pres-detail", "—");
+  on.append(target);
+  body.append(on);
+
+  const off = el("div", "pres-off", "No nerf this run");
+  body.append(off);
+
+  refs.nerf = { card, toggle, on, off, name, target };
+  return card;
+}
+
+/* --- Boot ----------------------------------------------------------------- */
+
+function init() {
+  const restored = readHash() || readStored();
+  if (restored) {
+    roll = restored.state;
+    nerfEnabled = restored.nerfOn;
+  } else {
+    roll = rollEverything();
+  }
+  store();
+
+  const grid = document.getElementById("grid");
+  grid.append(
+    buildRoleCard("vip", "VIP"),
+    buildRoleCard("guard", "Bodyguard"),
+    buildKillCard(),
+    buildNerfCard()
+  );
+  render();
+
+  document.getElementById("reroll").addEventListener("click", reroll);
+  document.getElementById("copy-link").addEventListener("click", copyLink);
+
+  window.addEventListener("hashchange", () => {
+    const fromHash = readHash();
+    if (!fromHash) return;
+    roll = fromHash.state;
+    nerfEnabled = fromHash.nerfOn;
+    store();
+    render();
+  });
+
+  window.addEventListener("storage", (event) => {
+    if (event.key !== NAMES_KEY) return;
+    reloadDiverNames();
+    render();
+  });
+}
+
+document.addEventListener("DOMContentLoaded", init);

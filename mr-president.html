@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mr. President :: Goon Divers</title>
-<meta name="description" content="This section has not been declassified yet.">
+<meta name="description" content="Rolls the Mr. President custom mode: VIP, bodyguard, the VIP's kill permission, and an optional salve nerf.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&display=swap" rel="stylesheet">
@@ -31,20 +31,32 @@
 <main class="shell">
 
   <div class="page-head">
-    <p class="eyebrow">Classified Briefing</p>
+    <p class="eyebrow">Executive Protection Detail</p>
     <h1>Mr. President</h1>
+    <p class="lede">
+      One diver is the VIP, another is sworn to keep them alive. Whether the VIP
+      is cleared to kill anything at all — enemy or ally — is a coin flip, and
+      when they are, the method is dictated to them. The salve nerf is optional
+      and lands wherever it lands, including on the VIP. Copy the link to hand
+      the squad the same run; names are shared with The Wheel of Pain.
+    </p>
   </div>
 
-  <section class="stub">
-    <span class="stub-stamp">Awaiting Orders</span>
-    <p>This section has not been declassified yet.</p>
-  </section>
+  <div class="controls">
+    <button class="btn" id="reroll" type="button">New Detail</button>
+    <button class="btn btn-ghost" id="copy-link" type="button">Copy Link</button>
+    <span class="control-note"><span id="copy-note"></span></span>
+  </div>
+
+  <div class="grid" id="grid"></div>
 
 </main>
 
 <footer class="foot">Managed Democracy is a privilege, not a right</footer>
 
 <script src="js/names.js"></script>
+<script src="js/data.js"></script>
+<script src="js/president.js"></script>
 
 </body>
 </html>

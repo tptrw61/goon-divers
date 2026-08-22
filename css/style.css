@@ -423,6 +423,129 @@ h1 {
 
 #copy-note { color: var(--se-yellow); }
 
+/* --- Mr. President body --------------------------------------------------- */
+
+/* Static counterpart to .diver-name, for cards whose header is a role rather
+   than a diver. */
+.card-title {
+  flex: 1;
+  min-width: 0;
+  font-size: .95rem;
+  font-weight: 700;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--diver);
+}
+
+.pres-body {
+  padding: 18px 16px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.pres-caption {
+  font-size: .64rem;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.pres-sub { margin-top: 10px; width: 100%; }
+.pres-sub[hidden] { display: none; }
+
+/* Editable diver name, sized as the card's headline. */
+.pres-name {
+  width: 100%;
+  font-family: inherit;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--diver);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 0;
+  padding: 4px 8px;
+  margin: -4px -8px;
+  cursor: text;
+  transition: border-color .12s, background .12s;
+}
+
+.pres-name::placeholder { color: var(--diver); opacity: .55; }
+.pres-name:hover  { border-color: var(--line); background: color-mix(in srgb, var(--diver) 7%, transparent); }
+.pres-name:focus  { outline: none; border-color: var(--diver);
+                    background: color-mix(in srgb, var(--diver) 12%, transparent); }
+.pres-name:focus::placeholder { opacity: .3; }
+
+.pres-verdict {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--se-yellow);
+}
+
+.pres-verdict.is-denied { color: var(--se-red); }
+
+.pres-nerf {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+  color: var(--diver);
+  margin-bottom: 10px;
+}
+
+.pres-detail {
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+  color: var(--text);
+}
+
+.pres-off {
+  font-size: 1.05rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.pres-off[hidden] { display: none; }
+
+/* --- On/off switch -------------------------------------------------------- */
+
+.toggle {
+  font-family: inherit;
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  min-width: 58px;
+  padding: 6px 12px;
+  cursor: pointer;
+  color: var(--ink);
+  background: var(--diver);
+  border: 1px solid var(--diver);
+  transition: color .12s, background .12s;
+}
+
+.toggle[aria-pressed="false"] {
+  color: var(--text-dim);
+  background: transparent;
+  border-color: var(--line);
+}
+
+.toggle[aria-pressed="false"]:hover { color: var(--text); border-color: var(--text-dim); }
+
 /* --- Stub pages ----------------------------------------------------------- */
 .stub {
   margin-top: 34px;

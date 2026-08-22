@@ -5,7 +5,7 @@ A three-page static site for GitHub Pages.
 | Page | File | Status |
 | --- | --- | --- |
 | The Wheel of Pain | `index.html` | Built — random Helldivers 2 loadout generator |
-| Mr. President | `mr-president.html` | Stub |
+| Mr. President | `mr-president.html` | Built — VIP escort custom mode |
 | Gear Swap | `gear-swap.html` | Built — who builds gear for whom |
 
 ## The Wheel of Pain
@@ -45,6 +45,37 @@ No public source documents diver 4's green. The three that are documented are
 all exactly 100% saturation at 64–77% lightness, so the green is matched to
 that family at hue 115. To use the real value, change `--p4` in
 `css/style.css`; nothing else needs touching.
+
+## Mr. President
+
+A custom mode in four parts:
+
+1. **VIP** — one diver.
+2. **Bodyguard** — a different diver, never the VIP.
+3. **Kill permission** — a straight coin flip on whether the VIP may kill
+   anything at all, enemy or Helldiver. When they may, one of six equally
+   likely modifiers dictates how: Anyway (meaning no restriction), Primary
+   Only, Pistol Only, Melee Only, Stratagem Only, Primary/Secondary Only.
+4. **Salve Nerf** — switchable. When on, exactly one nerf is drawn and lands on
+   one diver, chosen uniformly and free to land on the VIP or the bodyguard.
+   Nerfs may contradict the VIP's kill modifier; sort it out at the table.
+   Flipping the switch off and back on restores the same nerf rather than
+   quietly rerolling the run.
+
+The whole roll rides in the URL hash as `#r=vip.guard.kill.how.nerfOn.nerf.target`
+(divers 1-based, flags 0/1, table positions 0-based), with a **Copy Link**
+button. Anything malformed, out of range, or naming the same diver twice is
+rejected and rerolled rather than half-applied.
+
+### Adding a Salve Nerf
+
+Append a string to `SALVE_NERFS` at the bottom of `js/data.js`. That is the
+whole procedure — the draw reads the list's length, so nothing else changes,
+and appending leaves existing share links pointing at the same nerf they always
+did. Reordering or deleting entries will shift what an old link resolves to; a
+link pointing past the end of the list is treated as stale and rerolled.
+
+`VIP_KILL_MODIFIERS` sits alongside it and works the same way.
 
 ## Gear Swap
 

@@ -245,3 +245,33 @@ const BOOSTERS = [
   ["Stun Pods",                       "Booster"],
   ["Concealed Insertion",             "Booster"],
 ];
+
+/* ============================================================================
+   MR. PRESIDENT :: custom mode tables
+   ========================================================================== */
+
+/* How the VIP is permitted to kill, on the runs where they are permitted at
+   all. All equally likely; "Anyway" means no restriction on method. */
+const VIP_KILL_MODIFIERS = [
+  "Anyway",
+  "Primary Only",
+  "Pistol Only",
+  "Melee Only",
+  "Stratagem Only",
+  "Primary/Secondary Only",
+];
+
+/* Salve Nerfs. Add to this freely — no logic reads it by position except the
+   share link, so APPENDING to the end keeps old links meaning what they meant.
+   Reordering or removing entries will shift what an existing link resolves to;
+   a link pointing past the end of the list is treated as stale and rerolled. */
+const SALVE_NERFS = [
+  "No Stimming",
+  "No Resupply",
+  "All Eagles",
+  "Melee Only",
+  "Pistol Only",
+  "First Person Only",
+  "Third Person Only",
+  "No Aiming",
+];
