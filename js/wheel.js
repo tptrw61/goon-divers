@@ -7,6 +7,8 @@
        an entirely deserved outcome.
      - A stratagem cannot repeat WITHIN one diver's four.
      - Stratagems CAN repeat across divers; each diver is rolled on its own.
+     - Boosters are the ONE exception: they do not stack, so no two divers
+       are ever handed the same one.
      - Any item can be rerolled on its own without disturbing the rest.
    Diver names are typed straight into the card header and live in
    js/names.js, shared with every other page on the site.
@@ -51,9 +53,19 @@ function rollStratagems() {
   return chosen;
 }
 
-function rollDiver() {
+/** Booster names held by every diver except `exceptIndex`. */
+function squadBoosters(exceptIndex) {
+  return state.reduce((taken, diver, i) => {
+    if (i !== exceptIndex) taken.push(diver.booster[0]);
+    return taken;
+  }, []);
+}
+
+function rollDiver(takenBoosters = []) {
   const diver = { stratagems: rollStratagems() };
-  for (const slot of KIT_SLOTS) diver[slot.key] = pick(slot.pool);
+  for (const slot of KIT_SLOTS) {
+    diver[slot.key] = pick(slot.pool, slot.key === "booster" ? takenBoosters : []);
+  }
   return diver;
 }
 
@@ -135,12 +147,18 @@ function rerollStratagem(diverIndex, stratIndex) {
 
 function rerollKit(diverIndex, slotKey) {
   const slot = KIT_SLOTS.find((s) => s.key === slotKey);
-  state[diverIndex][slotKey] = pick(slot.pool, [state[diverIndex][slotKey][0]]);
+  // Always block the current pick so the button visibly does something, and
+  // for boosters block the rest of the squad's too.
+  const blocked = [state[diverIndex][slotKey][0]];
+  if (slotKey === "booster") blocked.push(...squadBoosters(diverIndex));
+  state[diverIndex][slotKey] = pick(slot.pool, blocked);
   paintSlot(diverIndex, slotKey);
 }
 
 function rerollDiver(diverIndex) {
-  state[diverIndex] = rollDiver();
+  // The other three keep their boosters, so rolling against them one diver at
+  // a time keeps the squad unique however the rerolls are sequenced.
+  state[diverIndex] = rollDiver(squadBoosters(diverIndex));
   paintDiver(diverIndex);
 }
 
@@ -249,7 +267,7 @@ function buildDiverCard(diverIndex) {
 function init() {
   const grid = document.getElementById("grid");
   for (let i = 0; i < DIVER_COUNT; i++) {
-    state.push(rollDiver());
+    state.push(rollDiver(state.map((diver) => diver.booster[0])));
     grid.append(buildDiverCard(i));
   }
   for (let i = 0; i < DIVER_COUNT; i++) {

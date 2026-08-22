@@ -18,6 +18,9 @@ Store item, all three Legendary (crossover) warbonds.
 - No in-game slot rules are enforced. Four backpacks is a legal roll.
 - A stratagem never repeats within one diver's four.
 - Stratagems *can* repeat across divers; each diver is rolled independently.
+- Boosters are the one exception. They do not stack in game, so no two divers
+  are ever handed the same booster — including when only a single booster or a
+  single diver is rerolled.
 - Every line has a `⟳` button that rerolls only that item. The card header
   rerolls one diver; **Spin the Wheel** rerolls all four.
 - Click a diver's name to rename them. Names default to `Diver 01`–`Diver 04`,
