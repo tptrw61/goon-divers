@@ -1,0 +1,375 @@
+/* ==========================================================================
+   GOON DIVERS :: SUPER EARTH TERMINAL SKIN
+   ========================================================================== */
+
+:root {
+  --se-yellow:      #ffe702;
+  --se-yellow-dim:  #b3a200;
+  --se-red:         #ff3b30;
+  --ink:            #08080a;
+  --panel:          #131317;
+  --panel-2:        #1b1b21;
+  --line:           #2e2e36;
+  --text:           #e6e6e8;
+  --text-dim:       #8a8a95;
+
+  --g-orbital:      #ff8a3d;
+  --g-eagle:        #ff5252;
+  --g-support:      #ffe702;
+  --g-backpack:     #5ec8ff;
+  --g-vehicle:      #c08cff;
+  --g-sentry:       #63e6a0;
+  --g-emplacement:  #63e6a0;
+  --g-slot:         #8a8a95;
+
+  --notch:          14px;
+  --font: "Chakra Petch", "Bahnschrift", "DIN Alternate",
+          "Segoe UI Semibold", system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(1200px 700px at 50% -10%, #1a1a20 0%, transparent 65%),
+    var(--ink);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.45;
+  letter-spacing: .01em;
+}
+
+/* Faint scanlines, purely decorative. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,.022) 0 1px,
+    transparent 1px 3px
+  );
+}
+
+a { color: var(--se-yellow); }
+
+/* --- Hazard stripe divider ------------------------------------------------ */
+.hazard {
+  height: 10px;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--se-yellow) 0 14px,
+    #0d0d0f 14px 28px
+  );
+}
+
+/* --- Masthead ------------------------------------------------------------- */
+.masthead {
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(180deg, #101014, #0b0b0e);
+}
+
+.masthead-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 14px 22px;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  flex-wrap: wrap;
+}
+
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.brand-mark {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--se-yellow);
+}
+
+.brand-sub {
+  font-size: .68rem;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.nav {
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.nav a {
+  display: block;
+  padding: 8px 16px;
+  font-size: .78rem;
+  font-weight: 600;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--text-dim);
+  border: 1px solid var(--line);
+  background: var(--panel);
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+  transition: color .12s, border-color .12s, background .12s;
+}
+
+.nav a:hover { color: var(--se-yellow); border-color: var(--se-yellow-dim); }
+
+.nav a[aria-current="page"] {
+  color: var(--ink);
+  background: var(--se-yellow);
+  border-color: var(--se-yellow);
+}
+
+/* --- Page shell ----------------------------------------------------------- */
+.shell {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 34px 22px 60px;
+}
+
+.page-head { margin-bottom: 26px; }
+
+.eyebrow {
+  font-size: .7rem;
+  letter-spacing: .34em;
+  text-transform: uppercase;
+  color: var(--se-yellow-dim);
+  margin: 0 0 8px;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(2.1rem, 6vw, 3.6rem);
+  font-weight: 700;
+  line-height: .98;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--se-yellow);
+  text-shadow: 0 0 26px rgba(255, 231, 2, .18);
+}
+
+.lede {
+  margin: 12px 0 0;
+  max-width: 68ch;
+  color: var(--text-dim);
+  font-size: .95rem;
+}
+
+/* --- Control bar ---------------------------------------------------------- */
+.controls {
+  margin: 24px 0 28px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--se-yellow);
+}
+
+.btn {
+  font-family: inherit;
+  font-size: .84rem;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  padding: 13px 26px;
+  color: var(--ink);
+  background: var(--se-yellow);
+  border: none;
+  cursor: pointer;
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  transition: filter .12s, transform .06s;
+}
+
+.btn:hover { filter: brightness(1.12); }
+.btn:active { transform: translateY(1px); }
+
+.btn-ghost {
+  color: var(--se-yellow);
+  background: transparent;
+  border: 1px solid var(--se-yellow-dim);
+}
+
+.btn-ghost:hover { background: rgba(255, 231, 2, .09); filter: none; }
+
+.control-note {
+  font-size: .74rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+/* --- Diver grid ----------------------------------------------------------- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 18px;
+}
+
+.diver {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  clip-path: polygon(
+    0 0, calc(100% - var(--notch)) 0, 100% var(--notch),
+    100% 100%, var(--notch) 100%, 0 calc(100% - var(--notch))
+  );
+  display: flex;
+  flex-direction: column;
+}
+
+.diver-head {
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(90deg, rgba(255,231,2,.14), transparent 70%);
+  border-bottom: 1px solid var(--line);
+}
+
+.diver-no {
+  font-size: .95rem;
+  font-weight: 700;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--se-yellow);
+}
+
+.diver-head .icon-btn { margin-left: auto; }
+
+.section-label {
+  padding: 10px 16px 6px;
+  font-size: .64rem;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.divider {
+  height: 1px;
+  margin: 6px 16px 0;
+  background: var(--line);
+}
+
+/* --- Individual kit slot -------------------------------------------------- */
+.slot {
+  display: grid;
+  grid-template-columns: 4px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 14px 7px 12px;
+}
+
+.slot:hover { background: var(--panel-2); }
+
+.slot-bar {
+  align-self: stretch;
+  min-height: 26px;
+  background: var(--tag, var(--g-slot));
+}
+
+.slot-body { min-width: 0; }
+
+.slot-kind {
+  font-size: .6rem;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.slot-name {
+  font-size: .95rem;
+  font-weight: 600;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.slot-name.rolling { color: var(--se-yellow-dim); }
+
+.icon-btn {
+  font-family: inherit;
+  font-size: .95rem;
+  line-height: 1;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  color: var(--text-dim);
+  background: transparent;
+  border: 1px solid var(--line);
+  cursor: pointer;
+  transition: color .12s, border-color .12s, background .12s;
+}
+
+.icon-btn:hover {
+  color: var(--ink);
+  background: var(--se-yellow);
+  border-color: var(--se-yellow);
+}
+
+/* --- Stub pages ----------------------------------------------------------- */
+.stub {
+  margin-top: 34px;
+  padding: 46px 26px;
+  text-align: center;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  clip-path: polygon(
+    0 0, calc(100% - var(--notch)) 0, 100% var(--notch),
+    100% 100%, var(--notch) 100%, 0 calc(100% - var(--notch))
+  );
+}
+
+.stub-stamp {
+  display: inline-block;
+  padding: 10px 26px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: var(--se-red);
+  border: 3px solid var(--se-red);
+  transform: rotate(-3deg);
+  opacity: .85;
+}
+
+.stub p {
+  margin: 22px auto 0;
+  max-width: 52ch;
+  color: var(--text-dim);
+}
+
+/* --- Footer --------------------------------------------------------------- */
+.foot {
+  border-top: 1px solid var(--line);
+  padding: 18px 22px;
+  text-align: center;
+  font-size: .7rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Wheel of Pain :: Goon Divers</title>
+<meta name="description" content="Random Helldivers 2 loadout generator for four divers. No themes, no synergy, no mercy.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="hazard"></div>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">Goon Divers</span>
+      <span class="brand-sub">Super Earth Command</span>
+    </a>
+    <nav class="nav">
+      <a href="index.html" aria-current="page">The Wheel of Pain</a>
+      <a href="mr-president.html">Mr. President</a>
+      <a href="gear-swap.html">Gear Swap</a>
+    </nav>
+  </div>
+</header>
+
+<main class="shell">
+
+  <div class="page-head">
+    <p class="eyebrow">Loadout Requisition Terminal</p>
+    <h1>The Wheel of Pain</h1>
+    <p class="lede">
+      Four divers. Four stratagems each, no repeats within a squad member.
+      Primary, secondary, grenade and booster drawn from the entire armory.
+      Nothing is themed, nothing is balanced, and nothing is negotiable —
+      though you may reroll any single line if the Wheel has been especially unkind.
+    </p>
+  </div>
+
+  <div class="controls">
+    <button class="btn" id="reroll-all" type="button">Spin the Wheel</button>
+    <span class="control-note">Pool: <span id="pool-count">—</span></span>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+</main>
+
+<footer class="foot">Managed Democracy is a privilege, not a right</footer>
+
+<script src="js/data.js"></script>
+<script src="js/wheel.js"></script>
+</body>
+</html>
