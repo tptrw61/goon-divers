@@ -8,14 +8,11 @@
      - A stratagem cannot repeat WITHIN one diver's four.
      - Stratagems CAN repeat across divers; each diver is rolled on its own.
      - Any item can be rerolled on its own without disturbing the rest.
-   Diver names are typed straight into the card header and kept in
-   localStorage, so they survive a reroll and a reload but never leave the
-   browser they were typed in.
+   Diver names are typed straight into the card header and live in
+   js/names.js, shared with every other page on the site.
    ========================================================================== */
 
-const DIVER_COUNT = 4;
 const STRAT_COUNT = 4;
-const NAMES_KEY   = "goondivers.names";
 
 const GROUP_LABEL = {
   orbital:     "Orbital",
@@ -36,31 +33,6 @@ const KIT_SLOTS = [
 ];
 
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-/* --- Diver names ---------------------------------------------------------- */
-
-/* Storage can throw outright in a locked-down browser, so every touch is guarded
-   and an empty result is a perfectly good answer. */
-function loadNames() {
-  try {
-    const parsed = JSON.parse(localStorage.getItem(NAMES_KEY) || "[]");
-    if (Array.isArray(parsed)) {
-      return Array.from({ length: DIVER_COUNT }, (_, i) => String(parsed[i] || ""));
-    }
-  } catch (err) { /* no stored names available; fall through */ }
-  return Array(DIVER_COUNT).fill("");
-}
-
-function saveNames() {
-  try {
-    localStorage.setItem(NAMES_KEY, JSON.stringify(names));
-  } catch (err) { /* names simply won't persist; the page still works */ }
-}
-
-const names = loadNames();
-
-const defaultName = (i) => `Diver ${String(i + 1).padStart(2, "0")}`;
-const displayName = (i) => names[i].trim() || defaultName(i);
 
 /* --- Rolling -------------------------------------------------------------- */
 
@@ -147,7 +119,7 @@ function paintDiver(diverIndex) {
 /* The card is the labelled region, so the reroll buttons inside it can keep
    short labels and still read unambiguously once a diver has been named. */
 function labelCard(diverIndex) {
-  refs[diverIndex].card.setAttribute("aria-label", `${displayName(diverIndex)} loadout`);
+  refs[diverIndex].card.setAttribute("aria-label", `${diverName(diverIndex)} loadout`);
 }
 
 /* --- Reroll actions ------------------------------------------------------- */
@@ -179,11 +151,11 @@ function rerollAll() {
 /** Wipe the typed names and fall back to Diver 01…04. Loadouts are untouched. */
 function clearNames() {
   for (let i = 0; i < DIVER_COUNT; i++) {
-    names[i] = "";
+    diverNames[i] = "";
     refs[i].nameInput.value = "";
     labelCard(i);
   }
-  saveNames();
+  saveDiverNames();
 }
 
 /* --- Card construction (runs once) ---------------------------------------- */
@@ -209,8 +181,8 @@ function buildSlotRow(kindText, onReroll, ariaLabel) {
 function buildNameInput(diverIndex) {
   const input = el("input", "diver-name");
   input.type = "text";
-  input.value = names[diverIndex];
-  input.placeholder = defaultName(diverIndex);
+  input.value = diverNames[diverIndex];
+  input.placeholder = defaultDiverName(diverIndex);
   input.maxLength = 22;
   input.spellcheck = false;
   input.autocomplete = "off";
@@ -218,9 +190,9 @@ function buildNameInput(diverIndex) {
   input.setAttribute("aria-label", `Name for diver ${diverIndex + 1}`);
 
   input.addEventListener("input", () => {
-    names[diverIndex] = input.value;
+    diverNames[diverIndex] = input.value;
     labelCard(diverIndex);
-    saveNames();
+    saveDiverNames();
   });
   input.addEventListener("keydown", (event) => {
     if (event.key === "Enter" || event.key === "Escape") input.blur();
@@ -287,6 +259,19 @@ function init() {
 
   document.getElementById("reroll-all").addEventListener("click", rerollAll);
   document.getElementById("clear-names").addEventListener("click", clearNames);
+
+  // Another tab (or another page of the site) may rename a diver while this
+  // one is open; storage events only fire in the tabs that did not write.
+  window.addEventListener("storage", (event) => {
+    if (event.key !== NAMES_KEY) return;
+    reloadDiverNames();
+    for (let i = 0; i < DIVER_COUNT; i++) {
+      if (document.activeElement !== refs[i].nameInput) {
+        refs[i].nameInput.value = diverNames[i];
+      }
+      labelCard(i);
+    }
+  });
 
   document.getElementById("pool-count").textContent =
     `${STRATAGEMS.length} stratagems · ${PRIMARIES.length} primaries · ` +

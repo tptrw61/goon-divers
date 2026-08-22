@@ -25,6 +25,18 @@ Store item, all three Legendary (crossover) warbonds.
   that one browser and are never sent anywhere. **Clear Names** resets all four
   without touching the loadouts.
 
+## Diver names across pages
+
+`js/names.js` owns the roster and is loaded by all three pages. `localStorage`
+is scoped to the site origin rather than to a single HTML file, so a name typed
+on The Wheel of Pain is already readable from Mr. President and Gear Swap —
+call `diverName(i)` for the name to show, which falls back to `Diver 0i` when
+nothing has been typed. Edit `diverNames[i]` and call `saveDiverNames()` to
+change one. Open tabs resync via the `storage` event.
+
+The key is namespaced `goondivers.names` because every project site under
+`<you>.github.io` shares one origin, and therefore one `localStorage`.
+
 ## Editing the armory
 
 Everything lives in `js/data.js` as plain `["Display Name", "group"]` pairs.
