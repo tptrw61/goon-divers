@@ -578,6 +578,18 @@ h1 {
   color: var(--text-dim);
 }
 
+/* --- Boot failure notice -------------------------------------------------- */
+
+.boot-error {
+  grid-column: 1 / -1;
+  padding: 20px 18px;
+  font-size: .95rem;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--se-red);
+}
+
 /* --- Footer --------------------------------------------------------------- */
 .foot {
   border-top: 1px solid var(--line);

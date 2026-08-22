@@ -115,6 +115,19 @@ For stratagems the `group` sets the colour tag on the card and must be one of
 For weapons, grenades and boosters the second value is free text and is shown
 next to the slot label.
 
+## Cache busting
+
+GitHub Pages serves assets with `cache-control: max-age=600`, so a browser can
+keep using a script for ten minutes after a deploy without revalidating. That
+bites when one file changes and a sibling does not — a page can end up running
+new code against an old `js/data.js` and fail at load.
+
+Every local `<link>` and `<script>` therefore carries a `?v=N` query string.
+**Bump N in all three HTML files whenever a CSS or JS file changes**, so the
+changed asset arrives on a URL the browser has never seen. If a page does fail
+to start anyway it now says so in place of the grid rather than rendering blank
+with dead buttons.
+
 ## Deploying to GitHub Pages
 
 ```bash

@@ -303,4 +303,27 @@ function init() {
   });
 }
 
-document.addEventListener("DOMContentLoaded", init);
+/* A stale cached script is the realistic failure mode here: a browser can hold
+   an old js/data.js for up to ten minutes after a deploy, and the page would
+   otherwise sit there blank with dead buttons. Say so out loud instead. Each
+   page keeps its own copy so the handler survives a stale sibling script. */
+function bootFailure(err) {
+  console.error(err);
+  const grid = document.getElementById("grid");
+  if (!grid) return;
+  grid.textContent = "";
+  const box = document.createElement("div");
+  box.className = "boot-error";
+  box.textContent =
+    "This page failed to start, usually because the browser is holding an " +
+    "outdated copy of a script. Reload with Ctrl+Shift+R (Cmd+Shift+R on a Mac).";
+  grid.append(box);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  try {
+    init();
+  } catch (err) {
+    bootFailure(err);
+  }
+});
