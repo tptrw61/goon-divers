@@ -8,10 +8,14 @@
      - A stratagem cannot repeat WITHIN one diver's four.
      - Stratagems CAN repeat across divers; each diver is rolled on its own.
      - Any item can be rerolled on its own without disturbing the rest.
+   Diver names are typed straight into the card header and kept in
+   localStorage, so they survive a reroll and a reload but never leave the
+   browser they were typed in.
    ========================================================================== */
 
 const DIVER_COUNT = 4;
 const STRAT_COUNT = 4;
+const NAMES_KEY   = "goondivers.names";
 
 const GROUP_LABEL = {
   orbital:     "Orbital",
@@ -32,6 +36,31 @@ const KIT_SLOTS = [
 ];
 
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* --- Diver names ---------------------------------------------------------- */
+
+/* Storage can throw outright in a locked-down browser, so every touch is guarded
+   and an empty result is a perfectly good answer. */
+function loadNames() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(NAMES_KEY) || "[]");
+    if (Array.isArray(parsed)) {
+      return Array.from({ length: DIVER_COUNT }, (_, i) => String(parsed[i] || ""));
+    }
+  } catch (err) { /* no stored names available; fall through */ }
+  return Array(DIVER_COUNT).fill("");
+}
+
+function saveNames() {
+  try {
+    localStorage.setItem(NAMES_KEY, JSON.stringify(names));
+  } catch (err) { /* names simply won't persist; the page still works */ }
+}
+
+const names = loadNames();
+
+const defaultName = (i) => `Diver ${String(i + 1).padStart(2, "0")}`;
+const displayName = (i) => names[i].trim() || defaultName(i);
 
 /* --- Rolling -------------------------------------------------------------- */
 
@@ -59,7 +88,7 @@ function rollDiver() {
 /* --- Rendering ------------------------------------------------------------ */
 
 const state = [];   // one entry per diver
-const refs  = [];   // { stratagems: [nameEl], primary: nameEl, ... }
+const refs  = [];   // { card, nameInput, stratagems: [row], primary: row, ... }
 
 function el(tag, className, text) {
   const node = document.createElement(tag);
@@ -115,6 +144,12 @@ function paintDiver(diverIndex) {
   for (const slot of KIT_SLOTS) paintSlot(diverIndex, slot.key);
 }
 
+/* The card is the labelled region, so the reroll buttons inside it can keep
+   short labels and still read unambiguously once a diver has been named. */
+function labelCard(diverIndex) {
+  refs[diverIndex].card.setAttribute("aria-label", `${displayName(diverIndex)} loadout`);
+}
+
 /* --- Reroll actions ------------------------------------------------------- */
 
 function rerollStratagem(diverIndex, stratIndex) {
@@ -141,6 +176,16 @@ function rerollAll() {
   for (let i = 0; i < DIVER_COUNT; i++) rerollDiver(i);
 }
 
+/** Wipe the typed names and fall back to Diver 01…04. Loadouts are untouched. */
+function clearNames() {
+  for (let i = 0; i < DIVER_COUNT; i++) {
+    names[i] = "";
+    refs[i].nameInput.value = "";
+    labelCard(i);
+  }
+  saveNames();
+}
+
 /* --- Card construction (runs once) ---------------------------------------- */
 
 function buildSlotRow(kindText, onReroll, ariaLabel) {
@@ -161,17 +206,41 @@ function buildSlotRow(kindText, onReroll, ariaLabel) {
   return { wrap, kind, name };
 }
 
+function buildNameInput(diverIndex) {
+  const input = el("input", "diver-name");
+  input.type = "text";
+  input.value = names[diverIndex];
+  input.placeholder = defaultName(diverIndex);
+  input.maxLength = 22;
+  input.spellcheck = false;
+  input.autocomplete = "off";
+  input.title = "Click to name this diver";
+  input.setAttribute("aria-label", `Name for diver ${diverIndex + 1}`);
+
+  input.addEventListener("input", () => {
+    names[diverIndex] = input.value;
+    labelCard(diverIndex);
+    saveNames();
+  });
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === "Escape") input.blur();
+  });
+
+  return input;
+}
+
 function buildDiverCard(diverIndex) {
   const card = el("article", "diver");
-  const ref  = { stratagems: [] };
+  const ref  = { card, stratagems: [] };
 
   const head = el("div", "diver-head");
-  head.append(el("span", "diver-no", `Diver ${String(diverIndex + 1).padStart(2, "0")}`));
+  ref.nameInput = buildNameInput(diverIndex);
+  head.append(ref.nameInput);
 
   const headBtn = el("button", "icon-btn", "⟳");
   headBtn.type = "button";
-  headBtn.title = `Reroll this diver's entire loadout`;
-  headBtn.setAttribute("aria-label", `Reroll diver ${diverIndex + 1}'s entire loadout`);
+  headBtn.title = "Reroll this entire loadout";
+  headBtn.setAttribute("aria-label", "Reroll this entire loadout");
   headBtn.addEventListener("click", () => rerollDiver(diverIndex));
   head.append(headBtn);
   card.append(head);
@@ -181,7 +250,7 @@ function buildDiverCard(diverIndex) {
     const row = buildSlotRow(
       "Stratagem",
       () => rerollStratagem(diverIndex, i),
-      `Reroll stratagem ${i + 1} for diver ${diverIndex + 1}`
+      `Reroll stratagem ${i + 1}`
     );
     ref.stratagems.push(row);
     card.append(row.wrap);
@@ -193,7 +262,7 @@ function buildDiverCard(diverIndex) {
     const row = buildSlotRow(
       slot.label,
       () => rerollKit(diverIndex, slot.key),
-      `Reroll ${slot.label.toLowerCase()} for diver ${diverIndex + 1}`
+      `Reroll ${slot.label.toLowerCase()}`
     );
     ref[slot.key] = row;
     card.append(row.wrap);
@@ -211,9 +280,13 @@ function init() {
     state.push(rollDiver());
     grid.append(buildDiverCard(i));
   }
-  for (let i = 0; i < DIVER_COUNT; i++) paintDiver(i);
+  for (let i = 0; i < DIVER_COUNT; i++) {
+    labelCard(i);
+    paintDiver(i);
+  }
 
   document.getElementById("reroll-all").addEventListener("click", rerollAll);
+  document.getElementById("clear-names").addEventListener("click", clearNames);
 
   document.getElementById("pool-count").textContent =
     `${STRATAGEMS.length} stratagems · ${PRIMARIES.length} primaries · ` +

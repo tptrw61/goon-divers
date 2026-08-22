@@ -247,13 +247,42 @@ h1 {
   border-bottom: 1px solid var(--line);
 }
 
-.diver-no {
+/* Editable diver name. Styled to read as a heading until you click it. */
+.diver-name {
+  flex: 1;
+  min-width: 0;
+  font-family: inherit;
   font-size: .95rem;
   font-weight: 700;
   letter-spacing: .2em;
   text-transform: uppercase;
   color: var(--se-yellow);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 0;
+  padding: 4px 8px;
+  margin: -4px -8px;
+  cursor: text;
+  transition: border-color .12s, background .12s;
 }
+
+.diver-name::placeholder {
+  color: var(--se-yellow);
+  opacity: .55;
+}
+
+.diver-name:hover {
+  border-color: var(--line);
+  background: rgba(255, 231, 2, .05);
+}
+
+.diver-name:focus {
+  outline: none;
+  border-color: var(--se-yellow);
+  background: rgba(255, 231, 2, .09);
+}
+
+.diver-name:focus::placeholder { opacity: .3; }
 
 .diver-head .icon-btn { margin-left: auto; }
 

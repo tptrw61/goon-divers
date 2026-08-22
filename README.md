@@ -20,6 +20,10 @@ Store item, all three Legendary (crossover) warbonds.
 - Stratagems *can* repeat across divers; each diver is rolled independently.
 - Every line has a `⟳` button that rerolls only that item. The card header
   rerolls one diver; **Spin the Wheel** rerolls all four.
+- Click a diver's name to rename them. Names default to `Diver 01`–`Diver 04`,
+  survive rerolls and reloads, and are stored in `localStorage` — they live in
+  that one browser and are never sent anywhere. **Clear Names** resets all four
+  without touching the loadouts.
 
 ## Editing the armory
 
