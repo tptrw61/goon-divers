@@ -275,3 +275,17 @@ const SALVE_NERFS = [
   "Third Person Only",
   "No Aiming",
 ];
+
+
+/* ============================================================================
+   GEAR SWAP :: what the swap covers
+   ============================================================================
+   One of these is drawn per swap and applies to the whole squad, so everyone
+   is building the same class of thing for their target. Equally likely.
+   Add to or reword this list freely — the draw reads its length. */
+
+const GEAR_SCOPES = [
+  "Primary, Secondary, Grenade, and Booster",
+  "Stratagems",
+  "Ideal",
+];

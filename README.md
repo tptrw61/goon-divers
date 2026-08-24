@@ -88,11 +88,24 @@ that diver *i* builds gear for, and all 24 are in play rather than only the 9
 derangements — so drawing yourself is a legitimate outcome and gets called out
 on the card.
 
-The chosen assignment rides in the URL hash as `#a=1`…`#a=24`, ordered
-lexicographically so a given number always means the same assignment. **Copy
-Link** hands the squad a URL that shows them all the same one, which is the only
-way for a static site to agree on a roll. With no hash it falls back to whatever
-this browser last stored, and failing that it rolls at random.
+A second wheel draws the **affected gear** — what class of kit is actually
+being built — from `GEAR_SCOPES` in `js/data.js`: *Primary, Secondary, Grenade,
+and Booster*; *Stratagems*; or *Ideal*. One scope covers the whole squad, so it
+sits in a full-width banner above the four cards rather than on each of them.
+Add to or reword that list freely; the draw reads its length.
+
+The assignment refuses to land on itself when rerolled, so the button always
+visibly does something. The scope does not: with only three options, forbidding
+a repeat would mean the same scope could never come up twice running, which is
+not what a wheel does.
+
+Both ride in the URL hash as `#a=assignment.scope` — the assignment ordered
+lexicographically, so a given number always means the same one. **Copy Link**
+hands the squad a URL that shows them all the same roll, which is the only way
+for a static site to agree on one. A hash naming only the assignment is
+rejected rather than left to roll its own scope, since a shared link has to pin
+down everything the squad sees. With no hash it falls back to whatever this
+browser last stored, and failing that it rolls at random.
 
 Card colour marks the diver being built *for*, not the builder, so a hand-off
 can be traced by matching two colours across cards.

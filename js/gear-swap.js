@@ -6,10 +6,14 @@
    with a fixed point means somebody drew themselves — all 24 are in play,
    not just the 9 derangements.
 
-   The chosen assignment rides in the URL hash (#a=1..24) so one person can
-   roll it and paste the link to the squad; a static site has no other way to
-   agree on one. Failing that it falls back to what this browser last stored.
-   Diver names come from js/names.js and are shared with The Wheel of Pain.
+   A second wheel draws the gear scope from GEAR_SCOPES — what class of kit is
+   actually being built. One scope covers the whole squad, so everybody builds
+   the same sort of thing for their target.
+
+   Both ride in the URL hash as #a=assignment.scope, so one person can roll and
+   paste the link to the squad; a static site has no other way to agree on one.
+   Failing that it falls back to what this browser last stored. Diver names come
+   from js/names.js and are shared with The Wheel of Pain.
    ========================================================================== */
 
 const SWAP_KEY = "goondivers.swap";
@@ -26,39 +30,53 @@ function permutations(list) {
 }
 
 const ASSIGNMENTS = permutations([0, 1, 2, 3]);   // 24 of them
-const refs = [];
-let current = 0;
+const refs = [];   // one per diver
+let scopeRef = null;
+let current = 0;   // index into ASSIGNMENTS
+let scope = 0;     // index into GEAR_SCOPES
 
-/* --- Which assignment are we showing? ------------------------------------- */
+/* --- Which roll are we showing? ------------------------------------------- */
 
-function inRange(n) {
-  return Number.isInteger(n) && n >= 0 && n < ASSIGNMENTS.length ? n : null;
+const inRange = (n, max) =>
+  Number.isInteger(n) && n >= 0 && n < max ? n : null;
+
+function validPair(assignment, gear) {
+  const a = inRange(assignment, ASSIGNMENTS.length);
+  const s = inRange(gear, GEAR_SCOPES.length);
+  return a === null || s === null ? null : { assignment: a, scope: s };
 }
 
-function readHashIndex() {
-  const match = /^#a=(\d+)$/.exec(window.location.hash || "");
-  return match ? inRange(Number(match[1]) - 1) : null;
+/* A shared link has to pin down everything the squad sees, so a hash carrying
+   only the assignment is rejected rather than left to roll its own scope. */
+function readHashRoll() {
+  const match = /^#a=(\d+)\.(\d+)$/.exec(window.location.hash || "");
+  return match ? validPair(Number(match[1]) - 1, Number(match[2]) - 1) : null;
 }
 
-function readStoredIndex() {
+function readStoredRoll() {
   try {
     const raw = localStorage.getItem(SWAP_KEY);
-    // Guard the empty cases first: Number(null) and Number("") are both 0,
-    // which is a valid index, so a first visit would never roll at random.
-    return raw === null || raw === "" ? null : inRange(Number(raw));
+    // Guard the empty cases: JSON.parse("") throws and a bare number is what
+    // the pre-scope build wrote, neither of which is a usable roll.
+    if (raw === null || raw === "") return null;
+    const saved = JSON.parse(raw);
+    return saved && typeof saved === "object"
+      ? validPair(saved.assignment, saved.scope)
+      : null;
   } catch (err) {
-    return null;   // storage blocked; a fresh roll is fine
+    return null;   // storage blocked or unreadable; a fresh roll is fine
   }
 }
 
-function storeIndex(index) {
+function storeRoll() {
   try {
-    localStorage.setItem(SWAP_KEY, String(index));
+    localStorage.setItem(SWAP_KEY, JSON.stringify({ assignment: current, scope }));
   } catch (err) { /* it just won't survive a reload */ }
 }
 
-function randomIndex(not) {
-  const open = ASSIGNMENTS.map((_, i) => i).filter((i) => i !== not);
+/** A fresh index into `length`, never landing back on `not`. */
+function randomIndex(length, not) {
+  const open = Array.from({ length }, (_, i) => i).filter((i) => i !== not);
   return open[Math.floor(Math.random() * open.length)];
 }
 
@@ -90,16 +108,24 @@ function render() {
     );
   }
 
+  scopeRef.name.textContent = GEAR_SCOPES[scope];
+  scopeRef.card.setAttribute("aria-label", `Affected gear: ${GEAR_SCOPES[scope]}`);
+
   document.getElementById("assignment-no").textContent =
     `${String(current + 1).padStart(2, "0")} / ${ASSIGNMENTS.length}`;
 
   // replaceState so rerolling doesn't stack up back-button history.
-  history.replaceState(null, "", `#a=${current + 1}`);
+  history.replaceState(null, "", `#a=${current + 1}.${scope + 1}`);
 }
 
 function reassign() {
-  current = randomIndex(current);
-  storeIndex(current);
+  // The assignment refuses to land on itself, so the button always visibly
+  // does something. The scope does not: with only a few options, forbidding a
+  // repeat would mean the same scope could never come up twice running, which
+  // is not what a wheel does.
+  current = randomIndex(ASSIGNMENTS.length, current);
+  scope = randomIndex(GEAR_SCOPES.length, null);
+  storeRoll();
   render();
 }
 
@@ -137,6 +163,22 @@ function buildNameInput(diverIndex) {
   return input;
 }
 
+/** Full-width banner above the squad, since one scope covers everybody. */
+function buildScopeCard() {
+  const card = el("article", "diver scope-card");
+  const head = el("div", "diver-head");
+  head.append(el("span", "card-title", "Affected Gear"));
+  card.append(head);
+
+  const body = el("div", "swap-body");
+  const name = el("div", "scope-name", "—");
+  body.append(name);
+  card.append(body);
+
+  scopeRef = { card, name };
+  return card;
+}
+
 function buildCard(diverIndex) {
   const card = el("article", "diver");
   const ref = { card };
@@ -162,14 +204,18 @@ function buildCard(diverIndex) {
 /* --- Boot ----------------------------------------------------------------- */
 
 function init() {
-  const fromHash = readHashIndex();
-  const stored   = readStoredIndex();
-  current = fromHash !== null ? fromHash
-          : stored   !== null ? stored
-          : randomIndex(null);
-  storeIndex(current);
+  const restored = readHashRoll() || readStoredRoll();
+  if (restored) {
+    current = restored.assignment;
+    scope = restored.scope;
+  } else {
+    current = randomIndex(ASSIGNMENTS.length, null);
+    scope = randomIndex(GEAR_SCOPES.length, null);
+  }
+  storeRoll();
 
   const grid = document.getElementById("grid");
+  grid.append(buildScopeCard());
   for (let i = 0; i < DIVER_COUNT; i++) grid.append(buildCard(i));
   render();
 
@@ -178,12 +224,12 @@ function init() {
 
   // Someone pasting a link into this tab, or renaming a diver in another one.
   window.addEventListener("hashchange", () => {
-    const index = readHashIndex();
-    if (index !== null && index !== current) {
-      current = index;
-      storeIndex(current);
-      render();
-    }
+    const fromHash = readHashRoll();
+    if (!fromHash) return;
+    current = fromHash.assignment;
+    scope = fromHash.scope;
+    storeRoll();
+    render();
   });
 
   window.addEventListener("storage", (event) => {

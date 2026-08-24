@@ -253,6 +253,13 @@ h1 {
 .diver:nth-child(3) { --diver: var(--p3); }
 .diver:nth-child(4) { --diver: var(--p4); }
 
+/* Gear Swap puts a full-width scope banner first, pushing the four divers
+   along by one. It sets its own colour, so only the divers shift. */
+.scope-card ~ .diver:nth-child(2) { --diver: var(--p1); }
+.scope-card ~ .diver:nth-child(3) { --diver: var(--p2); }
+.scope-card ~ .diver:nth-child(4) { --diver: var(--p3); }
+.scope-card ~ .diver:nth-child(5) { --diver: var(--p4); }
+
 /* Reroll buttons follow their card, so the squad colour reads down the whole
    card. The slot bars stay on the stratagem-category palette — those carry
    information the diver colour would drown out. */
@@ -422,6 +429,24 @@ h1 {
 .swap-self[hidden] { display: none; }
 
 #copy-note { color: var(--se-yellow); }
+
+/* Spans the whole grid: the scope is one ruling for the squad, not per diver. */
+/* .diver.scope-card, not .scope-card: it has to outrank .diver:nth-child(1),
+   or the banner takes diver one's orange from its position in the grid. */
+.diver.scope-card {
+  grid-column: 1 / -1;
+  --diver: var(--se-yellow);
+}
+
+.scope-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+  color: var(--se-yellow);
+}
 
 /* --- Mr. President body --------------------------------------------------- */
 
