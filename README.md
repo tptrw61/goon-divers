@@ -56,20 +56,33 @@ A custom mode in four parts:
    anything at all, enemy or Helldiver. When they may, one of six equally
    likely modifiers dictates how: Anyway (meaning no restriction), Primary
    Only, Pistol Only, Melee Only, Stratagem Only, Primary/Secondary Only.
-4. **Salve Nerf** — switchable. When on, exactly one nerf is drawn. It is not
-   pinned to anybody: it is a rule for the run, not a handicap on a named
-   diver. Nerfs may contradict the VIP's kill modifier; sort it out at the
-   table. Flipping the switch off and back on restores the same nerf rather
-   than quietly rerolling the run.
+4. **Salve Nerf** — switchable. When on, exactly one nerf is drawn. A second
+   switch, **Target**, decides who carries it. Off (the default), the nerf is a
+   rule for the whole run, pinned to nobody. On, a further draw picks one of
+   the four divers — equally likely, VIP and Bodyguard included — and the card
+   names them and takes their colour. Nerfs may contradict the VIP's kill
+   modifier; sort it out at the table. Flipping either switch off and back on
+   restores what was already rolled rather than quietly rerolling the run.
 
-Only the VIP and Bodyguard cards are tinted, since only those name a diver. The
-two rule cards stay on the Super Earth yellow, so colour on this page always
-means "this is about that diver".
+Each part rerolls on its own with a `⟳` button, and a reroll always lands on
+something different from what was showing:
 
-The whole roll rides in the URL hash as `#r=vip.guard.kill.how.nerfOn.nerf`
-(divers 1-based, flags 0/1, table positions 0-based), with a **Copy Link**
-button. Anything malformed, out of range, or naming the same diver twice is
-rejected and rerolled rather than half-applied.
+- **VIP and Bodyguard** are one reroll — either card's button redraws both.
+- **Kill Permission** and its modifier are one reroll.
+- **The nerf** and **its target** are separate rerolls.
+
+**New Detail** still rerolls everything.
+
+Only the VIP and Bodyguard cards are tinted, plus the nerf card while Target is
+on. Otherwise the rule cards stay on the Super Earth yellow, so colour on this
+page always means "this is about that diver".
+
+The whole roll rides in the URL hash as
+`#r=vip.guard.kill.how.nerfOn.nerf.targetOn.target` (divers 1-based, flags 0/1,
+table positions 0-based), with a **Copy Link** button. The last two fields are
+optional: a link without them has Target off, so older links keep working.
+Anything malformed, out of range, or naming the same diver twice as VIP and
+Bodyguard is rejected and rerolled rather than half-applied.
 
 ### Adding a Salve Nerf
 

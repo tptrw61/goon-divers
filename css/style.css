@@ -481,6 +481,16 @@ h1 {
 .pres-sub { margin-top: 10px; width: 100%; }
 .pres-sub[hidden] { display: none; }
 
+/* A headline value with its own reroll button beside it. */
+.pres-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.pres-row .pres-nerf { flex: 1; min-width: 0; margin-bottom: 0; }
+.pres-row .icon-btn  { flex: none; }
+.toggle[hidden] { display: none; }
+
 /* Editable diver name, sized as the card's headline. */
 .pres-name {
   width: 100%;

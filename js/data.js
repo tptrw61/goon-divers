@@ -88,6 +88,7 @@ const STRATAGEMS = [
   ["EXO-55 Breakthrough Exosuit",     "vehicle"],
   ["EXO-51 Lumberer Exosuit",         "vehicle"],
   ["TD-220 Bastion MK XVI",           "vehicle"],
+  ["TD-110 Maelstrom",                "vehicle"],
 
   /* --- Sentries ----------------------------------------------------------- */
   ["A/MG-43 Machine Gun Sentry",      "sentry"],
@@ -124,6 +125,7 @@ const PRIMARIES = [
   ["MA5C Assault Rifle",              "Assault Rifle"],
   ["AR/GL-21 One-Two",                "Assault Rifle"],
   ["AR-59 Suppressor",                "Assault Rifle"],
+  ["AR-11 Arbitrator",                "Assault Rifle"],
 
   ["R-63 Diligence",                  "Marksman Rifle"],
   ["R-63CS Diligence Counter Sniper", "Marksman Rifle"],
@@ -155,6 +157,7 @@ const PRIMARIES = [
 
   ["CB-9 Exploding Crossbow",         "Explosive"],
   ["R-36 Eruptor",                    "Explosive"],
+  ["GL-15 Evictor",                   "Explosive"],
 
   ["SG-8P Punisher Plasma",           "Energy"],
   ["PLAS-39 Accelerator Rifle",       "Energy"],
@@ -199,6 +202,7 @@ const SECONDARIES = [
   ["P-35 Re-Educator",                "Special"],
   ["P-33 Missile Pistol",             "Special"],
   ["P/40-K Bolt Pistol",              "Special"],
+  ["P-34 Breacher",                   "Special"],
 ];
 
 const GRENADES = [
@@ -223,6 +227,8 @@ const GRENADES = [
   ["G/SH-39 Shield",                  "Grenade"],
   ["G-48 Giga Grenade",               "Grenade"],
   ["G/40-K Melta Mine",               "Grenade"],
+  ["G-8 Immolation",                  "Grenade"],
+  ["G-60 Anti-Tank Seeker",           "Grenade"],
 ];
 
 const BOOSTERS = [
@@ -244,6 +250,8 @@ const BOOSTERS = [
   ["Sample Scanner",                  "Booster"],
   ["Stun Pods",                       "Booster"],
   ["Concealed Insertion",             "Booster"],
+  ["Integrated Extinguishers",        "Booster"],
+  ["Surplus EAT Allocation",          "Booster"],
 ];
 
 /* ============================================================================
