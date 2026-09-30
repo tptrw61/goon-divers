@@ -52,7 +52,7 @@ A custom mode in four parts:
 
 1. **VIP** — one diver.
 2. **Bodyguard** — a different diver, never the VIP.
-3. **Kill permission** — a straight coin flip on whether the VIP may kill
+3. **Kill permission** — a one-in-three chance that the VIP may not kill
    anything at all, enemy or Helldiver. When they may, one of six equally
    likely modifiers dictates how: Anyway (meaning no restriction), Primary
    Only, Pistol Only, Melee Only, Stratagem Only, Primary/Secondary Only.

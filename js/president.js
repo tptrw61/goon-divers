@@ -4,7 +4,7 @@
    Four sections:
      1. VIP        — one diver.
      2. Bodyguard  — a different diver; never the VIP.
-     3. Kill permission — a straight coin flip on whether the VIP may kill at
+     3. Kill permission — a one-in-three chance the VIP may not kill at
         all. When they may, one of VIP_KILL_MODIFIERS says how, all equally
         likely.
      4. Salve Nerf — switchable. When on, exactly one nerf from SALVE_NERFS
@@ -33,7 +33,7 @@ let targetEnabled = false;
 const randomIndex = (length) => Math.floor(Math.random() * length);
 
 /** A fresh everything. `how` and the nerf fields are always filled in, even
-    when the coin flip or the switch means they go unshown, so that toggling
+    when the kill roll or the switch means they go unshown, so that toggling
     the nerf back on never needs a second source of randomness. */
 function rollEverything() {
   const vip = randomIndex(DIVER_COUNT);
@@ -41,7 +41,7 @@ function rollEverything() {
   return {
     vip,
     guard:  others[randomIndex(others.length)],
-    kill:   Math.random() < 0.5,
+    kill:   Math.random() >= 1 / 3,   // 1 in 3 to be denied
     how:    randomIndex(VIP_KILL_MODIFIERS.length),
     nerf:   randomIndex(SALVE_NERFS.length),
     target: randomIndex(DIVER_COUNT),
