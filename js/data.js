@@ -64,6 +64,7 @@ const STRATAGEMS = [
   ["M-1000 Maxigun",                  "support"],
   ["CQC-1 One True Flag",             "support"],
   ["40-K Meltagun",                   "support"],
+  ["AMW-20 Apex",                     "support"],
 
   /* --- Backpacks ---------------------------------------------------------- */
   ["B-1 Supply Pack",                 "backpack"],
@@ -135,6 +136,8 @@ const PRIMARIES = [
   ["R-72 Censor",                     "Marksman Rifle"],
   ["R-4 Hyena",                       "Marksman Rifle"],
 
+  ["R-40 Sightliner",                 "Sniper Rifle"],
+
   ["SMG-37 Defender",                 "Submachine Gun"],
   ["SMG-72 Pummeler",                 "Submachine Gun"],
   ["MP-98 Knight",                    "Submachine Gun"],
@@ -169,6 +172,7 @@ const PRIMARIES = [
   ["PLAS-101 Purifier",               "Energy"],
   ["LAS-13 Trident",                  "Energy"],
   ["R/40-K Hot-Shot Marksman Rifle",  "Energy"],
+  ["LAS-44 Nova",                     "Energy"],
 
   ["VG-70 Variable",                  "Special"],
   ["FLAM-66 Torcher",                 "Special"],
@@ -183,6 +187,7 @@ const SECONDARIES = [
   ["P-92 Warrant",                    "Pistol"],
   ["M6C/SOCOM Pistol",                "Pistol"],
   ["P-69 Veto",                       "Pistol"],
+  ["P-44 Mist",                       "Pistol"],
 
   ["CQC-19 Stun Lance",               "Melee"],
   ["CQC-2 Saber",                     "Melee"],
@@ -229,6 +234,7 @@ const GRENADES = [
   ["G/40-K Melta Mine",               "Grenade"],
   ["G-8 Immolation",                  "Grenade"],
   ["G-60 Anti-Tank Seeker",           "Grenade"],
+  ["G-11 Caltrops",                   "Grenade"],
 ];
 
 const BOOSTERS = [
