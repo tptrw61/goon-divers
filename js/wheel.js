@@ -82,22 +82,24 @@ function el(tag, className, text) {
 }
 
 /**
- * Spin a slot's text through random names before landing on `entry`.
- * Reduced-motion visitors just get the result.
+ * Spin a slot through random entries before landing on `entry`. `show` paints
+ * everything that belongs to an entry (name, kind, note, colour), so the whole
+ * row spins together rather than just the name. Reduced-motion visitors just
+ * get the result.
  */
-function settle(nameEl, pool, entry, spinMs = 380) {
+function settle(nameEl, pool, entry, show, spinMs = 380) {
   if (reduceMotion) {
-    nameEl.textContent = entry[0];
+    show(entry);
     return;
   }
   const started = performance.now();
   nameEl.classList.add("rolling");
   (function tick() {
     if (performance.now() - started < spinMs) {
-      nameEl.textContent = pool[Math.floor(Math.random() * pool.length)][0];
+      show(pool[Math.floor(Math.random() * pool.length)]);
       setTimeout(tick, 45);
     } else {
-      nameEl.textContent = entry[0];
+      show(entry);
       nameEl.classList.remove("rolling");
     }
   })();
@@ -118,17 +120,21 @@ function paintSlot(diverIndex, slotKey, stratIndex) {
   if (slotKey === "stratagem") {
     const entry = diver.stratagems[stratIndex];
     const row   = ref.stratagems[stratIndex];
-    row.kind.textContent = GROUP_LABEL[entry[1]] || "Stratagem";
-    row.wrap.style.setProperty("--tag", `var(--g-${entry[1]})`);
-    paintNote(row.note, entry[0]);
-    settle(row.name, STRATAGEMS, entry);
+    settle(row.name, STRATAGEMS, entry, (e) => {
+      row.kind.textContent = GROUP_LABEL[e[1]] || "Stratagem";
+      row.wrap.style.setProperty("--tag", `var(--g-${e[1]})`);
+      row.name.textContent = e[0];
+      paintNote(row.note, e[0]);
+    });
   } else {
     const slot  = KIT_SLOTS.find((s) => s.key === slotKey);
     const entry = diver[slotKey];
     const row   = ref[slotKey];
-    row.kind.textContent = `${slot.label} · ${entry[1]}`;
-    paintNote(row.note, entry[0]);
-    settle(row.name, slot.pool, entry);
+    settle(row.name, slot.pool, entry, (e) => {
+      row.kind.textContent = `${slot.label} · ${e[1]}`;
+      row.name.textContent = e[0];
+      paintNote(row.note, e[0]);
+    });
   }
 }
 
