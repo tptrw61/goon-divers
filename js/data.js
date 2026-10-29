@@ -459,7 +459,7 @@ const SUPER_STORE_ITEMS = {
 /** The small origin note for an item: { text, store }, or null for base kit. */
 function originNote(name) {
   if (WARBOND_OF[name]) return { text: `Warbond: ${WARBOND_OF[name]}`, store: false };
-  if (SUPER_STORE_ITEMS[name]) return { text: SUPER_STORE_ITEMS[name], store: true };
+  if (SUPER_STORE_ITEMS[name]) return { text: `Super Store · ${SUPER_STORE_ITEMS[name]}`, store: true };
   return null;
 }
 
