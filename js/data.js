@@ -422,7 +422,7 @@ const WARBOND_ITEMS = {  "Helldivers Mobilize!": [
     "LAS-44 Nova",
     "P-44 Mist",
     "G-11 Caltrops",
-  ],  "Obedient Democracy Support Troopers": [
+  ],  "ODST": [   /* Obedient Democracy Support Troopers, shortened to fit */
     "MA5C Assault Rifle",
     "M7S SMG",
     "M90A Shotgun",
@@ -437,6 +437,11 @@ const WARBOND_ITEMS = {  "Helldivers Mobilize!": [
     "G/40-K Melta Mine",
     "40-K Meltagun",
   ],};
+
+/* Items locked behind a DLC edition rather than a warbond. */
+const EDITION_ITEMS = {
+  "MP-98 Knight": "Super Citizen's Edition",
+};
 
 /** Item name -> warbond name. */
 const WARBOND_OF = {};
@@ -458,6 +463,7 @@ const SUPER_STORE_ITEMS = {
 
 /** The small origin note for an item: { text, store }, or null for base kit. */
 function originNote(name) {
+  if (EDITION_ITEMS[name]) return { text: EDITION_ITEMS[name], store: false };
   if (WARBOND_OF[name]) return { text: `Warbond: ${WARBOND_OF[name]}`, store: false };
   if (SUPER_STORE_ITEMS[name]) return { text: `Super Store · ${SUPER_STORE_ITEMS[name]}`, store: true };
   return null;
