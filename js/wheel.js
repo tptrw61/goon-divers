@@ -103,6 +103,13 @@ function settle(nameEl, pool, entry, spinMs = 380) {
   })();
 }
 
+/** Fill a slot's origin note; Super Store items get the blue treatment. */
+function paintNote(noteEl, name) {
+  const origin = originNote(name);
+  noteEl.textContent = origin ? origin.text : "";
+  noteEl.classList.toggle("store", Boolean(origin && origin.store));
+}
+
 /** Push one slot's current state into the DOM, with the spin animation. */
 function paintSlot(diverIndex, slotKey, stratIndex) {
   const diver = state[diverIndex];
@@ -113,12 +120,14 @@ function paintSlot(diverIndex, slotKey, stratIndex) {
     const row   = ref.stratagems[stratIndex];
     row.kind.textContent = GROUP_LABEL[entry[1]] || "Stratagem";
     row.wrap.style.setProperty("--tag", `var(--g-${entry[1]})`);
+    paintNote(row.note, entry[0]);
     settle(row.name, STRATAGEMS, entry);
   } else {
     const slot  = KIT_SLOTS.find((s) => s.key === slotKey);
     const entry = diver[slotKey];
     const row   = ref[slotKey];
     row.kind.textContent = `${slot.label} · ${entry[1]}`;
+    paintNote(row.note, entry[0]);
     settle(row.name, slot.pool, entry);
   }
 }
@@ -184,6 +193,7 @@ function buildSlotRow(kindText, onReroll, ariaLabel) {
   const body = el("div", "slot-body");
   const kind = el("div", "slot-kind", kindText);
   const name = el("div", "slot-name", "—");
+  const note = el("div", "slot-note");
   const btn  = el("button", "icon-btn", "⟳");
 
   btn.type = "button";
@@ -191,9 +201,9 @@ function buildSlotRow(kindText, onReroll, ariaLabel) {
   btn.setAttribute("aria-label", ariaLabel);
   btn.addEventListener("click", onReroll);
 
-  body.append(kind, name);
+  body.append(kind, name, note);
   wrap.append(bar, body, btn);
-  return { wrap, kind, name };
+  return { wrap, kind, name, note };
 }
 
 function buildNameInput(diverIndex) {

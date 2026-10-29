@@ -173,6 +173,7 @@ const PRIMARIES = [
   ["LAS-13 Trident",                  "Energy"],
   ["R/40-K Hot-Shot Marksman Rifle",  "Energy"],
   ["LAS-44 Nova",                     "Energy"],
+  ["LAS-12 Sai",                      "Energy"],
 
   ["VG-70 Variable",                  "Special"],
   ["FLAM-66 Torcher",                 "Special"],
@@ -259,6 +260,208 @@ const BOOSTERS = [
   ["Integrated Extinguishers",        "Booster"],
   ["Surplus EAT Allocation",          "Booster"],
 ];
+
+/* ============================================================================
+   WARBONDS :: which warbond an item comes from
+   ----------------------------------------------------------------------------
+   Keyed by warbond, listing item names exactly as they appear above. Anything
+   not listed (base kit) shows no note; Super Store items are further down.
+   ========================================================================== */
+
+const WARBOND_ITEMS = {  "Helldivers Mobilize!": [
+    "SG-8 Punisher",
+    "R-63 Diligence",
+    "P-19 Redeemer",
+    "SMG-37 Defender",
+    "SG-225 Breaker",
+    "LAS-5 Scythe",
+    "AR-23P Liberator Penetrator",
+    "R-63CS Diligence Counter Sniper",
+    "SG-8S Slugger",
+    "SG-225SP Breaker Spray&Pray",
+    "PLAS-1 Scorcher",
+    "G-6 Frag",
+    "G-16 Impact",
+    "G-3 Smoke",
+    "Hellpod Space Optimization",
+    "Vitality Enhancement",
+    "Stamina Enhancement",
+    "Muscle Enhancement",
+    "UAV Recon Booster",
+    "Increased Reinforcement Budget",
+  ],  "Steeled Veterans": [
+    "AR-23C Liberator Concussive",
+    "P-4 Senator",
+    "SG-225IE Breaker Incendiary",
+    "JAR-5 Dominator",
+    "G-10 Incendiary",
+    "Flexible Reinforcement Budget",
+  ],  "Cutting Edge": [
+    "LAS-16 Sickle",
+    "SG-8P Punisher Plasma",
+    "ARC-12 Blitzer",
+    "LAS-7 Dagger",
+    "G-23 Stun",
+    "Localization Confusion",
+  ],  "Democratic Detonation": [
+    "BR-14 Adjudicator",
+    "G-123 Thermite",
+    "R-36 Eruptor",
+    "CB-9 Exploding Crossbow",
+    "GP-31 Grenade Pistol",
+    "Expert Extraction Pilot",
+  ],  "Polar Patriots": [
+    "AR-61 Tenderizer",
+    "SMG-72 Pummeler",
+    "P-113 Verdict",
+    "PLAS-101 Purifier",
+    "G-13 Incendiary Impact",
+    "Motivational Shocks",
+  ],  "Viper Commandos": [
+    "AR-23A Liberator Carbine",
+    "SG-22 Bushwhacker",
+    "K-2 Throwing Knife",
+    "Experimental Infusion",
+  ],  "Freedom's Flame": [
+    "SG-451 Cookout",
+    "FLAM-66 Torcher",
+    "P-72 Crisper",
+    "Firebomb Hellpods",
+  ],  "Chemical Agents": [
+    "TX-41 Sterilizer",
+    "P-11 Stim Pistol",
+    "G-4 Gas",
+    "AX/TX-13 Dog Breath",
+  ],  "Truth Enforcers": [
+    "SG-20 Halt",
+    "SMG-32 Reprimand",
+    "PLAS-15 Loyalist",
+    "Dead Sprint",
+  ],  "Urban Legends": [
+    "CQC-19 Stun Lance",
+    "Armed Resupply Pods",
+    "SH-51 Directional Shield",
+    "A/FLAM-40 Flame Sentry",
+    "E/AT-12 Anti-Tank Emplacement",
+  ],  "Servants of Freedom": [
+    "LAS-17 Double-Edge Sickle",
+    "GP-20 Ultimatum",
+    "G-50 Seeker",
+    "B-100 Portable Hellbomb",
+  ],  "Borderline Justice": [
+    "R-6 Deadeye",
+    "LAS-58 Talon",
+    "TED-63 Dynamite",
+    "Sample Extricator",
+    "LIFT-860 Hover Pack",
+  ],  "Masters of Ceremony": [
+    "R-2 Amendment",
+    "CQC-2 Saber",
+    "G-142 Pyrotech",
+    "Sample Scanner",
+    "CQC-1 One True Flag",
+  ],  "Force of Law": [
+    "AR-32 Pacifier",
+    "G-109 Urchin",
+    "Stun Pods",
+    "GL-52 De-Escalator",
+    "AX/ARC-3 K-9",
+  ],  "Control Group": [
+    "VG-70 Variable",
+    "PLAS-45 Epoch",
+    "G-31 Arc",
+    "A/LAS-98 Laser Sentry",
+    "LIFT-182 Warp Pack",
+  ],  "Dust Devils": [
+    "AR-2 Coyote",
+    "G-7 Pineapple",
+    "S-11 Speargun",
+    "EAT-700 Expendable Napalm",
+    "MS-11 Solo Silo",
+  ],  "Python Commandos": [
+    "AR/GL-21 One-Two",
+    "CQC-9 Defoliation Tool",
+    "M-1000 Maxigun",
+    "AX/FLAM-75 Hot Dog",
+  ],  "Redacted Regiment": [
+    "R-72 Censor",
+    "P-35 Re-Educator",
+    "AR-59 Suppressor",
+    "TM-1 Lure Mine",
+    "Concealed Insertion",
+    "B/MD C4 Pack",
+  ],  "Siege Breakers": [
+    "LAS-13 Trident",
+    "EAT-411 Leveller",
+    "CQC-20 Breaching Hammer",
+    "GL-28 Belt-Fed Grenade Launcher",
+    "G/SH-39 Shield",
+  ],  "Entrenched Division": [
+    "SMG/FLAM-34 Stoker",
+    "CQC-73 Entrenchment Tool",
+    "P-69 Veto",
+    "G-48 Giga Grenade",
+    "B/FLAM-80 Cremator",
+  ],  "Exo Experts": [
+    "SMG-203 Gallant",
+    "MGX-42 Bullet Storm",
+    "P-33 Missile Pistol",
+    "EXO-51 Lumberer Exosuit",
+    "EXO-55 Breakthrough Exosuit",
+  ],  "Ironclad Democracy": [
+    "AR-11 Arbitrator",
+    "P-34 Breacher",
+    "GL-15 Evictor",
+    "G-8 Immolation",
+    "G-60 Anti-Tank Seeker",
+    "Integrated Extinguishers",
+    "Surplus EAT Allocation",
+  ],  "Scope of Authority": [
+    "R-40 Sightliner",
+    "AMW-20 Apex",
+    "LAS-44 Nova",
+    "P-44 Mist",
+    "G-11 Caltrops",
+  ],  "Obedient Democracy Support Troopers": [
+    "MA5C Assault Rifle",
+    "M7S SMG",
+    "M90A Shotgun",
+    "M6C/SOCOM Pistol",
+  ],  "Righteous Revenants": [
+    "StA-52 Assault Rifle",
+    "StA-11 SMG",
+    "PLAS-39 Accelerator Rifle",
+  ],  "Castellan's Creed": [
+    "R/40-K Hot-Shot Marksman Rifle",
+    "P/40-K Bolt Pistol",
+    "G/40-K Melta Mine",
+    "40-K Meltagun",
+  ],};
+
+/** Item name -> warbond name. */
+const WARBOND_OF = {};
+for (const [warbond, items] of Object.entries(WARBOND_ITEMS)) {
+  for (const item of items) WARBOND_OF[item] = warbond;
+}
+
+/* Super Store items, with the warbond they were released alongside. */
+const SUPER_STORE_ITEMS = {
+  "SG-97 Sweeper":        "Entrenched Division",
+  "DBS-2 Double Freedom": "Python Commandos",
+  "CQC-42 Machete":       "Dust Devils",
+  "P-92 Warrant":         "Force of Law",
+  "CQC-5 Combat Hatchet": "Servants of Freedom",
+  "LAS-12 Sai":           "Ironclad Democracy",
+  "CQC-30 Stun Baton":    "Urban Legends",
+  "G-89 Smokescreen":     "Redacted Regiment",
+};
+
+/** The small origin note for an item: { text, store }, or null for base kit. */
+function originNote(name) {
+  if (WARBOND_OF[name]) return { text: `Warbond: ${WARBOND_OF[name]}`, store: false };
+  if (SUPER_STORE_ITEMS[name]) return { text: SUPER_STORE_ITEMS[name], store: true };
+  return null;
+}
 
 /* ============================================================================
    MR. PRESIDENT :: custom mode tables
