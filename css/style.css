@@ -331,6 +331,59 @@ h1 {
   background: var(--line);
 }
 
+/* --- Per-diver warbond toggles -------------------------------------------- */
+.wb-toggles {
+  margin-top: auto;
+  border-top: 1px solid var(--line);
+  font-size: .64rem;
+  color: var(--text-dim);
+}
+
+.wb-toggles summary {
+  padding: 8px 16px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.wb-toggles summary:hover { color: var(--text); }
+
+.wb-actions {
+  padding: 0 16px 4px;
+  display: flex;
+  gap: 12px;
+}
+
+.wb-link {
+  font: inherit;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--diver);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.wb-link:hover { text-decoration: underline; }
+
+.wb-list {
+  padding: 4px 16px 12px;
+  columns: 135px;      /* fills down each column, then across */
+  column-gap: 10px;
+}
+
+.wb-item {
+  break-inside: avoid;
+  padding: 1px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.wb-item input { accent-color: var(--diver); margin: 0; }
+
 /* --- Individual kit slot -------------------------------------------------- */
 .slot {
   display: grid;

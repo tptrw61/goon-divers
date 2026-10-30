@@ -38,17 +38,29 @@ const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").match
 
 /* --- Rolling -------------------------------------------------------------- */
 
-/** Pick one entry from `pool`, skipping any whose name is in `exclude`. */
-function pick(pool, exclude = []) {
-  const open = pool.filter((entry) => !exclude.includes(entry[0]));
-  const from = open.length ? open : pool;
+/* Warbonds each diver has switched off, one Set per diver. Only items listed
+   in WARBOND_ITEMS can be filtered out: base kit, Super Store items and the
+   Super Citizen's Edition Knight are never in a warbond, so they always roll.
+   Mobilize is left out of the toggle list, so it can never be disabled. */
+const disabledWarbonds = Array.from({ length: DIVER_COUNT }, () => new Set());
+const TOGGLE_WARBONDS = Object.keys(WARBOND_ITEMS).filter((w) => w !== MOBILIZE);
+
+/** Pick one entry from `pool`, skipping any whose name is in `exclude` and
+ *  any from a warbond the given diver has switched off. */
+function pick(pool, exclude = [], diverIndex) {
+  const off = disabledWarbonds[diverIndex];
+  const allowed = off && off.size
+    ? pool.filter((entry) => !off.has(WARBOND_OF[entry[0]]))
+    : pool;
+  const open = allowed.filter((entry) => !exclude.includes(entry[0]));
+  const from = open.length ? open : allowed;
   return from[Math.floor(Math.random() * from.length)];
 }
 
-function rollStratagems() {
+function rollStratagems(diverIndex) {
   const chosen = [];
   for (let i = 0; i < STRAT_COUNT; i++) {
-    chosen.push(pick(STRATAGEMS, chosen.map((s) => s[0])));
+    chosen.push(pick(STRATAGEMS, chosen.map((s) => s[0]), diverIndex));
   }
   return chosen;
 }
@@ -61,10 +73,10 @@ function squadBoosters(exceptIndex) {
   }, []);
 }
 
-function rollDiver(takenBoosters = []) {
-  const diver = { stratagems: rollStratagems() };
+function rollDiver(diverIndex, takenBoosters = []) {
+  const diver = { stratagems: rollStratagems(diverIndex) };
   for (const slot of KIT_SLOTS) {
-    diver[slot.key] = pick(slot.pool, slot.key === "booster" ? takenBoosters : []);
+    diver[slot.key] = pick(slot.pool, slot.key === "booster" ? takenBoosters : [], diverIndex);
   }
   return diver;
 }
@@ -156,7 +168,7 @@ function rerollStratagem(diverIndex, stratIndex) {
   // Block the other three so we stay unique, and the current one so the
   // button always visibly does something.
   const taken = strats.map((s) => s[0]);
-  strats[stratIndex] = pick(STRATAGEMS, taken);
+  strats[stratIndex] = pick(STRATAGEMS, taken, diverIndex);
   paintSlot(diverIndex, "stratagem", stratIndex);
 }
 
@@ -166,14 +178,14 @@ function rerollKit(diverIndex, slotKey) {
   // for boosters block the rest of the squad's too.
   const blocked = [state[diverIndex][slotKey][0]];
   if (slotKey === "booster") blocked.push(...squadBoosters(diverIndex));
-  state[diverIndex][slotKey] = pick(slot.pool, blocked);
+  state[diverIndex][slotKey] = pick(slot.pool, blocked, diverIndex);
   paintSlot(diverIndex, slotKey);
 }
 
 function rerollDiver(diverIndex) {
   // The other three keep their boosters, so rolling against them one diver at
   // a time keeps the squad unique however the rerolls are sequenced.
-  state[diverIndex] = rollDiver(squadBoosters(diverIndex));
+  state[diverIndex] = rollDiver(diverIndex, squadBoosters(diverIndex));
   paintDiver(diverIndex);
 }
 
@@ -235,6 +247,53 @@ function buildNameInput(diverIndex) {
   return input;
 }
 
+/** Collapsed-by-default list of warbond checkboxes for one diver. */
+function buildWarbondToggles(diverIndex) {
+  const off = disabledWarbonds[diverIndex];
+  const box = el("details", "wb-toggles");
+  const summary = el("summary");
+  const list = el("div", "wb-list");
+  const checks = new Map();
+
+  const refreshSummary = () => {
+    summary.textContent =
+      `Warbonds · ${TOGGLE_WARBONDS.length - off.size}/${TOGGLE_WARBONDS.length}`;
+  };
+
+  for (const name of TOGGLE_WARBONDS) {
+    const label = el("label", "wb-item");
+    const check = el("input");
+    check.type = "checkbox";
+    check.checked = true;
+    check.addEventListener("change", () => {
+      if (check.checked) off.delete(name); else off.add(name);
+      refreshSummary();
+    });
+    checks.set(name, check);
+    label.append(check, el("span", "", name));
+    list.append(label);
+  }
+
+  const setAll = (on) => {
+    for (const [name, check] of checks) {
+      check.checked = on;
+      if (on) off.delete(name); else off.add(name);
+    }
+    refreshSummary();
+  };
+  const actions = el("div", "wb-actions");
+  for (const [text, on] of [["All", true], ["None", false]]) {
+    const btn = el("button", "wb-link", text);
+    btn.type = "button";
+    btn.addEventListener("click", () => setAll(on));
+    actions.append(btn);
+  }
+
+  refreshSummary();
+  box.append(summary, actions, list);
+  return box;
+}
+
 function buildDiverCard(diverIndex) {
   const card = el("article", "diver");
   const ref  = { card, stratagems: [] };
@@ -274,6 +333,8 @@ function buildDiverCard(diverIndex) {
     card.append(row.wrap);
   }
 
+  card.append(buildWarbondToggles(diverIndex));
+
   refs.push(ref);
   return card;
 }
@@ -283,7 +344,7 @@ function buildDiverCard(diverIndex) {
 function init() {
   const grid = document.getElementById("grid");
   for (let i = 0; i < DIVER_COUNT; i++) {
-    state.push(rollDiver(state.map((diver) => diver.booster[0])));
+    state.push(rollDiver(i, state.map((diver) => diver.booster[0])));
     grid.append(buildDiverCard(i));
   }
   for (let i = 0; i < DIVER_COUNT; i++) {
