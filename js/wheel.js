@@ -78,10 +78,19 @@ function pick(pool, exclude = [], diverIndex) {
   return from[Math.floor(Math.random() * from.length)];
 }
 
+/** `names` plus every stratagem that cannot share a loadout with one of them. */
+function withExclusive(names) {
+  const blocked = [...names];
+  for (const group of EXCLUSIVE_STRATAGEMS) {
+    if (group.some((name) => names.includes(name))) blocked.push(...group);
+  }
+  return blocked;
+}
+
 function rollStratagems(diverIndex) {
   const chosen = [];
   for (let i = 0; i < STRAT_COUNT; i++) {
-    chosen.push(pick(STRATAGEMS, chosen.map((s) => s[0]), diverIndex));
+    chosen.push(pick(STRATAGEMS, withExclusive(chosen.map((s) => s[0])), diverIndex));
   }
   return chosen;
 }
@@ -186,10 +195,11 @@ function labelCard(diverIndex) {
 
 function rerollStratagem(diverIndex, stratIndex) {
   const strats = state[diverIndex].stratagems;
-  // Block the other three so we stay unique, and the current one so the
-  // button always visibly does something.
-  const taken = strats.map((s) => s[0]);
-  strats[stratIndex] = pick(STRATAGEMS, taken, diverIndex);
+  // Block the other three (and anything that cannot sit beside them) so we
+  // stay valid, and the current one so the button always visibly does something.
+  const others = strats.filter((_, i) => i !== stratIndex).map((s) => s[0]);
+  strats[stratIndex] = pick(
+    STRATAGEMS, [...withExclusive(others), strats[stratIndex][0]], diverIndex);
   paintSlot(diverIndex, "stratagem", stratIndex);
 }
 

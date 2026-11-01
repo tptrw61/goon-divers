@@ -113,6 +113,15 @@ const STRATAGEMS = [
   ["E/AT-12 Anti-Tank Emplacement",   "emplacement"],
 ];
 
+/* Stratagems a diver can only have one of at a time, so a single loadout never
+   rolls two from the same group. Names must match STRATAGEMS exactly. */
+const EXCLUSIVE_STRATAGEMS = [
+  ["M-103 Supply FRV", "M-102 Gunner FRV"],
+  ["TD-220 Bastion MK XVI", "TD-110 Maelstrom"],
+  ["EXO-45 Patriot Exosuit", "EXO-49 Emancipator Exosuit",
+   "EXO-55 Breakthrough Exosuit", "EXO-51 Lumberer Exosuit"],
+];
+
 const PRIMARIES = [
   ["AR-23 Liberator",                 "Assault Rifle"],
   ["AR-23P Liberator Penetrator",     "Assault Rifle"],
