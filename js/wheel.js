@@ -42,8 +42,29 @@ const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").match
    in WARBOND_ITEMS can be filtered out: base kit, Super Store items and the
    Super Citizen's Edition Knight are never in a warbond, so they always roll.
    Mobilize is left out of the toggle list, so it can never be disabled. */
-const disabledWarbonds = Array.from({ length: DIVER_COUNT }, () => new Set());
 const TOGGLE_WARBONDS = Object.keys(WARBOND_ITEMS).filter((w) => w !== MOBILIZE);
+const WARBONDS_KEY    = "goondivers.warbonds-off";
+
+/** Per-diver lists of switched-off warbonds from storage. Names that are no
+ *  longer toggleable (a warbond renamed or dropped) are ignored. */
+function readDisabledWarbonds() {
+  let parsed = [];
+  try {
+    parsed = JSON.parse(localStorage.getItem(WARBONDS_KEY) || "[]");
+  } catch (err) { /* nothing readable; everything stays enabled */ }
+  return Array.from({ length: DIVER_COUNT }, (_, i) =>
+    new Set((Array.isArray(parsed[i]) ? parsed[i] : [])
+      .filter((name) => TOGGLE_WARBONDS.includes(name))));
+}
+
+const disabledWarbonds = readDisabledWarbonds();
+
+function saveDisabledWarbonds() {
+  try {
+    localStorage.setItem(WARBONDS_KEY,
+      JSON.stringify(disabledWarbonds.map((off) => [...off])));
+  } catch (err) { /* choices won't persist; the page still works */ }
+}
 
 /** Pick one entry from `pool`, skipping any whose name is in `exclude` and
  *  any from a warbond the given diver has switched off. */
@@ -258,13 +279,15 @@ function buildWarbondToggles(diverIndex) {
   const refreshSummary = () => {
     summary.textContent =
       `Warbonds · ${TOGGLE_WARBONDS.length - off.size}/${TOGGLE_WARBONDS.length}`;
+    summary.classList.toggle("partial", off.size > 0);
+    saveDisabledWarbonds();
   };
 
   for (const name of TOGGLE_WARBONDS) {
     const label = el("label", "wb-item");
     const check = el("input");
     check.type = "checkbox";
-    check.checked = true;
+    check.checked = !off.has(name);
     check.addEventListener("change", () => {
       if (check.checked) off.delete(name); else off.add(name);
       refreshSummary();

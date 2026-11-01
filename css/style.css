@@ -348,6 +348,10 @@ h1 {
 
 .wb-toggles summary:hover { color: var(--text); }
 
+/* Lit up when any warbond is switched off, so a filtered diver is obvious
+   even with the list collapsed. */
+.wb-toggles summary.partial { color: var(--se-yellow); }
+
 .wb-actions {
   padding: 0 16px 4px;
   display: flex;
