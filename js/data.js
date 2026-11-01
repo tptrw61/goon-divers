@@ -118,6 +118,7 @@ const PRIMARIES = [
   ["AR-23P Liberator Penetrator",     "Assault Rifle"],
   ["AR-23C Liberator Concussive",     "Assault Rifle"],
   ["AR-23A Liberator Carbine",        "Assault Rifle"],
+  ["AR-23L Liberator Legacy",         "Assault Rifle"],
   ["AR-61 Tenderizer",                "Assault Rifle"],
   ["BR-14 Adjudicator",               "Assault Rifle"],
   ["StA-52 Assault Rifle",            "Assault Rifle"],
